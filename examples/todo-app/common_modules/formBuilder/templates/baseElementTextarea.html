@@ -1,0 +1,118 @@
+<div>
+  {{#if valueList.length}}
+  {{! If valueList has items}}
+    {{#each valueList}}
+        <div class="{{@root.fieldWrapperClass}}" uif-fbtype="wrapper" {{#if @root.uqid}}
+             uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}}>
+
+            <textarea uif-fbtype="element" {{#if @root.class}} {{#if @root.readOnly}}  readOnly{{/if}} class="{{@root.class}}"{{/if}} {{#if @root.uqid}}
+                      uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}} {{#if @root.rows}}
+                      rows="{{@root.rows}}"{{/if}} {{#if @root.cols}}
+                      cols="{{@root.cols}}"{{/if}}{{#each @root.customAttr}}{{@key}}="{{{this}}}"{{/each}}>{{{value}}}</textarea>
+
+          {{! If Qualifiers are present}}
+          {{#if @root.qualifier}}
+            {{#if @root.qualifier.allowedValues }}
+                <span class="{{@root.qualifierSeparatorClass}}"></span>
+                <select uif-fbtype="qualifier" {{#if @root.uqid}} uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}}
+                        class="{{@root.qualifierSelectClass}}" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}>
+                  {{#each @root.qualifier.allowedValues}}
+                      <option value="{{.}}"
+                        {{#check (lookup .. 'qualifier') '===' .}}
+                              selected
+                        {{/check}}>{{.}}</option>
+                  {{/each}}
+                </select>
+            {{/if}}
+          {{/if}}
+
+          {{#if @first}}
+            {{#check @root.valueList.length '>' 1}}
+              {{#if @root.showRemoveField}}
+                  <span class="{{@root.removeFieldSeparatorClass}}"></span>
+                  <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                         class="{{@root.removeFieldClass}}" value="{{@root.removeFieldValue}}">
+              {{/if}}
+            {{/check}}
+          {{else}}
+            {{#if @root.showRemoveField}}
+                <span class="{{@root.removeFieldSeparatorClass}}"></span>
+                <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                       class="{{@root.removeFieldClass}}" value="{{@root.removeFieldValue}}">
+            {{/if}}
+          {{/if}}
+          {{#if @last}}
+            {{#if @root.showAddInputField}}
+                <span class="{{@root.addNewInputSeparatorClass}}"></span>
+                <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                       class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}">
+            {{/if}}
+          {{/if}}
+
+          {{#if @root.insertLoaderPlaceholder}}
+              <span class="{{@root.insertLoaderPlaceholderClass}}" uif-fbtype="loader"></span>
+          {{/if}}
+
+          {{#if @root.insertErrorPlaceholder}}
+              <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="error">{{{@root.errMsg}}}</span>
+              <span class="{{@root.insertWarningPlaceholderClass}}" uif-fbtype="warnings">{{{@root.warningMsg}}}</span>
+          {{/if}}
+
+          {{#check @index '!==' @root.valueListLengthOBase}}
+            {{{@root.valueListSeperator}}}
+          {{/check}}
+        </div>
+    {{/each}}
+  {{else}}
+      <div class="{{fieldWrapperClass}}" uif-fbtype="wrapper" {{#if @root.uqid}} uif-uqid="{{@root.uqid}}"{{/if}}>
+
+        {{! If valueList is empty, An Empty Input should be shown}}
+          <textarea uif-fbtype="element"{{#if @root.readOnly}}  readOnly{{/if}} {{#if @root.class}} class="{{@root.class}}"{{/if}} {{#if @root.uqid}}
+                    uif-uqid="{{@root.uqid}}"{{/if}} {{#if @root.rows}} rows="{{@root.rows}}"{{/if}} {{#if @root.cols}}
+                    cols="{{@root.cols}}"{{/if}}{{#each @root.customAttr}}{{@key}}="{{{this}}}"{{/each}}>{{{@root.value}}}</textarea>
+
+        {{! If Qualifiers are present}}
+        {{#if qualifier}}
+          {{#if @root.qualifier.allowedValues }}
+              <span class="{{@root.qualifierSeparatorClass}}"></span>
+              <select uif-fbtype="qualifier" class="{{@root.qualifierSelectClass}}" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}>
+                {{#each @root.qualifier.allowedValues}}
+                    <option value="{{.}}">{{.}}</option>
+                {{/each}}
+              </select>
+          {{/if}}
+        {{/if}}
+
+        {{! If Multiple Entries are allowed}}
+        {{#if multipleEntries}}
+            <span class="{{@root.addNewInputSeparatorClass}}"></span>
+            <input type="button" class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}">
+        {{/if}}
+
+        {{#if @root.insertLoaderPlaceholder}}
+            <span class="{{@root.insertLoaderPlaceholderClass}}" uif-fbtype="loader"></span>
+        {{/if}}
+
+        {{#if @root.insertErrorPlaceholder}}
+            <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="error">{{{@root.errMsg}}}</span>
+            <span class="{{@root.insertWarningPlaceholderClass}}" uif-fbtype="warnings">{{{@root.warningMsg}}}</span>
+        {{/if}}
+
+      </div>
+  {{/if}}
+  {{#if errors.length}}
+      <ol class="error-messages">
+        {{#each errors}}
+          {{#check errorHint '===' "WARNING"}}
+              <li class="warning-message">{{errorMessage}}</li>
+          {{/check}}
+          {{#check errorHint '===' "CRITICAL"}}
+              <li class="error-message">{{errorMessage}}</li>
+          {{/check}}
+        {{/each}}
+      </ol>
+  {{/if}}
+    {{#if description}}
+        <span class="{{descriptionClass}}">{{description}}</span>
+    {{/if}}
+</div>

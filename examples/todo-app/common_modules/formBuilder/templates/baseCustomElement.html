@@ -1,0 +1,115 @@
+<div>
+  {{#if valueList.length}}
+  {{! If valueList has items}}
+    {{#each valueList}}
+        <div class="{{fieldWrapperClass}}" uif-fbtype="wrapper" {{#if @root.uqid}}
+             uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}}>
+
+            <div class="custom-ele-holder {{moduleContainerClass}}"></div>
+
+          {{#if label}}
+              <label {{#if id}}for="{{id}}"{{/if}}>{{{label}}}</label>
+          {{/if}}
+
+          {{! If Qualifiers are present}}
+          {{#if @root.qualifier}}
+            {{#if @root.qualifier.allowedValues }}
+                <span class="{{@root.qualifierSeparatorClass}}"></span>
+                <select {{#if @root.name}} name="{{@root.name}}"{{/if}} {{#if @root.id}} name="{{@root.id}}"{{/if}} {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}} {{#if @root.disabled}}
+                                               disabled="{{@root.disabled}}"{{/if}}uif-fbtype="qualifier" {{#if @root.uqid}}
+                                               uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}}
+                                               class="{{@root.qualifierSelectClass}}">
+                  {{#each @root.qualifier.allowedValues}}
+                      <option value="{{.}}"
+                        {{#check (lookup .. 'qualifier') '===' .}}
+                              selected
+                        {{/check}}>{{.}}</option>
+                  {{/each}}
+                </select>
+            {{/if}}
+          {{/if}}
+
+          {{#if @first}}
+            {{#if @root.showAddInputField}}
+                <span class="{{@root.addNewInputSeparatorClass}}"></span>
+                <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                       class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}">
+            {{/if}}
+          {{else}}
+            {{#if @root.showRemoveField}}
+                <span class="{{@root.removeFieldSeparatorClass}}"></span>
+                <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                       class="{{@root.removeFieldClass}}" value="{{@root.removeFieldValue}}">
+            {{/if}}
+            {{#if @root.showAddInputField}}
+                <span class="{{@root.addNewInputSeparatorClass}}"></span>
+                <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                       class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}">
+            {{/if}}
+          {{/if}}
+
+          {{#if @root.insertLoaderPlaceholder}}
+              <span class="{{@root.insertLoaderPlaceholderClass}}" uif-fbtype="loader"></span>
+          {{/if}}
+
+          {{#if @root.insertErrorPlaceholder}}
+              <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="error"></span>
+              <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="warnings"></span>
+          {{/if}}
+
+          {{#check @index '!==' @root.valueListLengthOBase}}
+            {{{@root.valueListSeperator}}}
+          {{/check}}
+
+        </div>
+    {{/each}}
+  {{else}}
+      <div class="{{fieldWrapperClass}} {{moduleContainerClass}}" uif-fbtype="wrapper" {{#if @root.uqid}} uif-uqid="{{@root.uqid}}"{{/if}}>
+
+          <div class="custom-ele-holder {{moduleContainerClass}}"></div>
+
+        {{! If Qualifiers are present}}
+        {{#if qualifier}}
+          {{#if @root.qualifier.allowedValues }}
+              <span class="{{@root.qualifierSeparatorClass}}"></span>
+              <select {{#if @root.name}} name="{{@root.name}}"{{/if}} {{#if @root.id}} name="{{@root.id}}"{{/if}} {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}} uif-fbtype="qualifier"
+                                             class="{{@root.qualifierSelectClass}}">
+                {{#each @root.qualifier.allowedValues}}
+                    <option value="{{.}}">{{.}}</option>
+                {{/each}}
+              </select>
+          {{/if}}
+        {{/if}}
+
+        {{! If Multiple Entries are allowed}}
+        {{#if multipleEntries}}
+            <span class="{{@root.addNewInputSeparatorClass}}"></span>
+            <input type="button" {{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}
+                   class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}">
+        {{/if}}
+
+        {{#if @root.insertLoaderPlaceholder}}
+            <span class="{{@root.insertLoaderPlaceholderClass}}" uif-fbtype="loader"></span>
+        {{/if}}
+
+        {{#if @root.insertErrorPlaceholder}}
+            <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="error"></span>
+            <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="warnings"></span>
+        {{/if}}
+
+      </div>
+  {{/if}}
+
+  {{#if errors.length}}
+      <ol class="error-messages">
+        {{#each errors}}
+          {{#check errorHint '===' "WARNING"}}
+              <li class="warning-message">{{errorMessage}}</li>
+          {{/check}}
+          {{#check errorHint '===' "CRITICAL"}}
+              <li class="error-message">{{errorMessage}}</li>
+          {{/check}}
+        {{/each}}
+      </ol>
+  {{/if}}
+</div>

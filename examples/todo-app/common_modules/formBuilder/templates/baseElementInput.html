@@ -1,0 +1,90 @@
+{{#if valueList.length}}
+    {{! If valueList has items}}
+    {{#each valueList}}
+    <div class="{{fieldWrapperClass}}" uif-fbtype="wrapper" {{#if @root.uqid}} uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}}>
+
+        <input {{#if id}}id="{{id}}"{{/if}} uif-fbtype="element" {{#if @root.type}}type="{{@root.type}}" {{else}}type="text"{{/if}}{{#if @root.disabled}} disabled="{{@root.disabled}}"{{/if}}{{#if @root.readOnly}}  readOnly{{/if}}{{#if @root.hidden}}  hidden{{/if}}{{#if @root.placeholder}} placeholder="{{@root.placeholder}}"{{/if}}{{#if ../min}} min="{{@root.min}}"{{/if}}{{#if @root.max}} max="{{@root.max}}"{{/if}}{{#if @root.step}} step="{{@root.step}}"{{/if}}{{#if value}} value="{{{value}}}"{{/if}}{{#if @root.autofocus}} autofocus{{/if}}{{#if @root.autocomplete}} autocomplete="{{@root.autocomplete}}"{{/if}}{{#if @root.maxlength}} maxlength="{{@root.maxlength}}"{{/if}}{{#if @root.name}} name="{{@root.name}}"{{/if}}{{#if @root.class}} class="{{@root.class}}"{{/if}}{{#if @root.id}} id="{{@root.id}}"{{/if}}{{#if @root.uqid}} uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}}{{#if @root.formnovalidate}} formnovalidate="{{@root.formnovalidate}}"{{/if}}{{#if customURL}}submit-url="{{customURL}}"{{/if}} {{#if validationOnclick}} validation-on-click="{{validationOnclick}}" {{/if}}{{#if selected}} checked="{{selected}}"{{/if}} {{#each @root.customAttr}}{{@key}}="{{{this}}}"{{/each}}/>
+        {{#if label}}
+        <label {{#if id}}for="{{id}}"{{/if}}>{{{label}}}</label>
+        {{/if}}
+
+        {{! If Qualifiers are present}}
+        {{#if @root.qualifier}}
+        {{#if @root.qualifier.allowedValues }}
+            <span class="{{@root.qualifierSeparatorClass}}"></span>
+            <select uif-fbtype="qualifier" {{#if @root.uqid}} uif-uqid="{{@root.uqid}}--{{@index}}"{{/if}} class="{{@root.qualifierSelectClass}}" {{#each @root.customAttr}}{{@key}}="{{{this}}}"{{/each}}>
+                {{#each @root.qualifier.allowedValues}}
+                <option value="{{.}}"
+                        {{#check (lookup .. 'qualifier') '===' .}}
+                        selected
+                        {{/check}}>{{.}}</option>
+                {{/each}}
+            </select>
+        {{/if}}
+        {{/if}}
+
+
+
+        {{#if @last}}
+            {{! If Multiple Entries are allowed}}
+            {{#if @root.showAddInputField}}
+            <span class="{{@root.addNewInputSeparatorClass}}"></span>
+            <input type="button" class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}" data-val="value="{{@root.addNewInputValue}}">
+            {{/if}}
+        {{else}}
+            {{#if @root.showRemoveField}}
+            <span class="{{@root.removeFieldSeparatorClass}}"></span>
+            <input type="button" class="{{@root.removeFieldClass}}" value="{{@root.removeFieldValue}}" data-val="value="{{@root.addNewInputValue}}">
+            {{/if}}
+        {{/if}}
+
+        {{#if @root.insertLoaderPlaceholder}}
+            <span class="{{@root.insertLoaderPlaceholderClass}}" uif-fbtype="loader"></span>
+        {{/if}}
+
+        {{#if @root.insertErrorPlaceholder}}
+            <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="error">{{{errMsg}}}</span>
+            <span class="{{@root.insertWarningPlaceholderClass}}" uif-fbtype="warnings">{{{warningMsg}}}</span>
+        {{/if}}
+
+        {{#check @index '!==' @root.valueListLengthOBase}}
+            {{{@root.valueListSeperator}}}
+        {{/check}}
+
+    </div>
+    {{/each}}
+{{else}}
+    <div class="{{fieldWrapperClass}}" uif-fbtype="wrapper" {{#if @root.uqid}} uif-uqid="{{@root.uqid}}"{{/if}}>
+
+    {{! If valueList is empty, An Empty Input should be shown}}
+    <input uif-fbtype="element" {{#if type}}type="{{type}}" {{else}}type="text"{{/if}}{{#if disabled}} disabled="{{disabled}}"{{/if}}{{#if readOnly}}  readOnly{{/if}}{{#if @root.hidden}}  hidden{{/if}}{{#if placeholder}} placeholder="{{placeholder}}"{{/if}}{{#if min}} min="{{min}}"{{/if}}{{#if max}} max="{{max}}"{{/if}}{{#if step}} step="{{step}}"{{/if}}{{#if value}} value="{{{value}}}"{{/if}}{{#if autofocus}} autofocus{{/if}}{{#if autocomplete}} autocomplete="{{autocomplete}}"{{/if}}{{#if maxlength}} maxlength="{{maxlength}}"{{/if}}{{#if name}} name="{{name}}"{{/if}}{{#if class}} class="{{class}}"{{/if}}{{#if id}} id="{{id}}"{{/if}}{{#if uqid}} uif-uqid="{{uqid}}"{{/if}}{{#if formnovalidate}} formnovalidate="{{formnovalidate}}"{{/if}} {{#if customURL}}submit-url="{{customURL}}"{{/if}} {{#if validationOnclick}} validation-on-click="{{validationOnclick}}" {{/if}}{{#each customAttr}}{{@key}}="{{{this}}}"{{/each}}/>
+
+    {{! If Qualifiers are present}}
+    {{#if qualifier}}
+    {{#if @root.qualifier.allowedValues }}
+        <span class="{{@root.qualifierSeparatorClass}}"></span>
+        <select uif-fbtype="qualifier" class="{{@root.qualifierSelectClass}}" {{#each @root.customAttr}}{{@key}}="{{{this}}}"{{/each}}>
+            {{#each @root.qualifier.allowedValues}}
+            <option value="{{.}}">{{.}}</option>
+            {{/each}}
+        </select>
+    {{/if}}
+    {{/if}}
+
+    {{! If Multiple Entries are allowed}}
+    {{#if multipleEntries}}
+        <span class="{{@root.addNewInputSeparatorClass}}"></span>
+        <input type="button" class="{{@root.addNewInputClass}}" value="{{@root.addNewInputValue}}">
+    {{/if}}
+
+    {{#if @root.insertLoaderPlaceholder}}
+        <span class="{{@root.insertLoaderPlaceholderClass}}" uif-fbtype="loader"></span>
+    {{/if}}
+
+    {{#if @root.insertErrorPlaceholder}}
+        <span class="{{@root.insertErrorPlaceholderClass}}" uif-fbtype="error">{{{@root.errMsg}}}</span>
+        <span class="{{@root.insertWarningPlaceholderClass}}" uif-fbtype="warnings">{{{@root.warningMsg}}}</span>
+    {{/if}}
+
+    </div>
+{{/if}}
