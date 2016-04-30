@@ -1,0 +1,87 @@
+{
+  "_args": [
+    [
+      "truss@https://github.com/flipkart-incubator/truss.git",
+      "/Users/durgesh.priyaranjan/dev/incubator-truss/examples/todo-app"
+    ]
+  ],
+  "_from": "git+https://github.com/flipkart-incubator/truss.git#80dd30acd10068cec35e38bf6771b892a9dee32e",
+  "_id": "truss@0.1.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/truss",
+  "_phantomChildren": {},
+  "_requested": {
+    "hosted": {
+      "directUrl": "https://raw.githubusercontent.com/flipkart-incubator/truss/master/package.json",
+      "gitUrl": "git://github.com/flipkart-incubator/truss.git",
+      "httpsUrl": "git+https://github.com/flipkart-incubator/truss.git",
+      "shortcut": "github:flipkart-incubator/truss",
+      "ssh": "git@github.com:flipkart-incubator/truss.git",
+      "sshUrl": "git+ssh://git@github.com/flipkart-incubator/truss.git",
+      "type": "github"
+    },
+    "name": "truss",
+    "raw": "truss@https://github.com/flipkart-incubator/truss.git",
+    "rawSpec": "https://github.com/flipkart-incubator/truss.git",
+    "scope": null,
+    "spec": "git+https://github.com/flipkart-incubator/truss.git",
+    "type": "hosted"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "git+https://github.com/flipkart-incubator/truss.git#80dd30acd10068cec35e38bf6771b892a9dee32e",
+  "_shasum": "6f89fc1dffbaae458ccdeb2c72012987d1c18f03",
+  "_shrinkwrap": null,
+  "_spec": "truss@https://github.com/flipkart-incubator/truss.git",
+  "_where": "/Users/durgesh.priyaranjan/dev/incubator-truss/examples/todo-app",
+  "author": {
+    "name": "truss-developers@flipkart.com"
+  },
+  "bugs": {
+    "url": "https://github.com/flipkart-incubator/truss/issues"
+  },
+  "dependencies": {
+    "es6-promise": "3.1.2"
+  },
+  "description": "The Scalable JavaScript Application Framework",
+  "devDependencies": {
+    "babel-cli": "6.7.7",
+    "babel-loader": "6.2.4",
+    "babel-preset-es2015": "6.6.0",
+    "cross-env": "1.0.7",
+    "webpack": "1.13.0"
+  },
+  "directories": {
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "gitHead": "80dd30acd10068cec35e38bf6771b892a9dee32e",
+  "homepage": "https://github.com/flipkart-incubator/truss#readme",
+  "keywords": [
+    "Framework",
+    "JavaScript",
+    "Modular",
+    "Scalable"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "truss",
+  "optionalDependencies": {},
+  "readme": "# truss\nScalable Javascript Framework\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flipkart-incubator/truss.git"
+  },
+  "scripts": {
+    "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/truss.js",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/truss.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.1.0"
+}

@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _es6Promise = require("es6-promise");
+
 var _pubsub = require("./pubsub");
 
 var _pubsub2 = _interopRequireDefault(_pubsub);
@@ -55,6 +57,17 @@ function ModuleBase(config) {
 
 ModuleBase.prototype = {
     init: function init() {
+        var self = this;
+        if (!this.render && this.template) {
+            return new _es6Promise.Promise(function (resolve) {
+                var containerSelector = self.getModuleContainer();
+                var placeholders = self.modulePlaceholders;
+
+                document.querySelector(containerSelector).innerHTML = self.template(placeholders);
+                resolve();
+            });
+        }
+
         return this.render();
     },
     setup: function setup() {

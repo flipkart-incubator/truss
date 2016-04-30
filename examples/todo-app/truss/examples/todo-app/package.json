@@ -42,8 +42,7 @@
     "serve-favicon": "~2.2.0",
     "vdom-parser": "^1.3.0",
     "virtual-dom": "^2.1.1",
-    "webpack": "^1.12.13",
-    "truss": "https://github.com/flipkart-incubator/truss.git"
+    "webpack": "^1.12.13"
   },
   "devDependencies": {
     "autoprefixer-loader": "^3.2.0",

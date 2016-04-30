@@ -1,3 +1,5 @@
+let uniqueIdsTill = -1;
+
 function charsLeftIndex(string, chars) {
     var index = -1,
         length = string.length;
@@ -14,6 +16,9 @@ function charsRightIndex(string, chars) {
 }
 
 export default {
+    getNextUniqueId:  function () {
+        return 'UIF-' + (++uniqueIdsTill);
+    },
     pick: function (obj, arr) {
         var o = {};
         arr.forEach(function (key) {
@@ -39,4 +44,4 @@ export default {
     clearSlashes: function(string) {
         return this.trim(string, "/");
     }
-}
+};

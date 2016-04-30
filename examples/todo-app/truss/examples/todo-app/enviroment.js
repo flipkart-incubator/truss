@@ -4,6 +4,6 @@ module.exports={
     framework:path.resolve("./truss"),
     plugins:path.resolve("./truss_plugins"),
     home:path.resolve("../"),
-    modules:path.resolve("./modules"),
+    modules:path.resolve("./common_modules"),
     minified:path.resolve("./minified")
 };
