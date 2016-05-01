@@ -1,0 +1,59 @@
+{
+  "name": "truss-vanilla",
+  "version": "1.0.0",
+  "description": "A truss example app which utilises Truss Core to generate webpage from JSON config.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack",
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "TrussJS",
+    "TrussCore",
+    "Vanilla",
+    "Truss"
+  ],
+  "author": "truss-developers@flipkart.com",
+  "license": "MIT",
+  "dependencies": {
+    "truss": "git+https://github.com/flipkart-incubator/truss.git",
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.3",
+    "babel-preset-es2015": "^6.5.0",
+    "body-parser": "~1.12.0",
+    "clean-webpack-plugin": "^0.1.8",
+    "compression": "^1.4.3",
+    "cookie-parser": "~1.3.4",
+    "es6-promise": "^2.3.0",
+    "handlebars": "^4.0.5",
+    "isomorphic-fetch": "^2.2.1",
+    "js-beautify": "^1.6.2",
+    "lodash": "3.9.3",
+    "lodash-node": "^3.7",
+    "node-libs-browser": "^1.0.0",
+    "q": "^1.3.0",
+    "redux": "^3.3.1",
+    "request": "^2.55",
+    "serve-favicon": "~2.2.0",
+    "vdom-parser": "^1.3.0",
+    "virtual-dom": "^2.1.1",
+    "webpack": "^1.12.13"
+  },
+  "devDependencies": {
+    "autoprefixer-loader": "^3.2.0",
+    "compression": "1.5.0",
+    "css-loader": "^0.23.1",
+    "del": "1.2.0",
+    "handlebars-loader": "^1.1.4",
+    "handlebars-template-loader": "^0.5.7",
+    "html-webpack-plugin": "^2.9.0",
+    "less": "^2.6.0",
+    "less-loader": "^2.2.2",
+    "merge-stream": "0.1.7",
+    "node-libs-browser": "^1.0.0",
+    "script-loader": "^0.6.1",
+    "style-loader": "^0.13.0",
+    "yargs": "3.11.0"
+  }
+}

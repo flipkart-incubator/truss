@@ -5,3 +5,5 @@ export {
     Truss,
     PubSub
 };
+
+export default Truss;

@@ -2,7 +2,7 @@
   "name": "truss",
   "version": "0.1.0",
   "description": "The Scalable JavaScript Application Framework",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "directories": {
     "doc": "docs",
     "example": "examples",

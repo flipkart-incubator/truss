@@ -1,13 +1,14 @@
-import Truss from "Truss";
-import Layout from "apps/layout";
-
+import {Truss} from "truss";
+import Layout from "modules/layout";
 
 // Load truss app
 Truss.createInstance({
-	moduleName: "layout",
+	"moduleName": "layout",
 	"instanceConfig": {
 		"container": "#app-container",
-			"placeholders": {}
+		"placeholders": {
+			"header": "Vanilla Truss"
+		}
 	},
 	"instance": Layout
 });

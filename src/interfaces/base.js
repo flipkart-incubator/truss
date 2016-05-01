@@ -45,6 +45,17 @@ function ModuleBase(config) {
 
 ModuleBase.prototype = {
     init: function () {
+        var self = this;
+        if(!this.render && this.template ){
+            return new Promise(function(resolve){
+                const containerSelector = self.getModuleContainer();
+                const placeholders = self.modulePlaceholders;
+
+                document.querySelector(containerSelector).innerHTML = self.template(placeholders);
+                resolve();
+            });
+        }
+
         return this.render();
     },
     setup: function () {
