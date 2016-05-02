@@ -4,7 +4,6 @@ Truss is a JavaScript framework to develop modular, event based applications.
 
 It helps you write applications that are high performant with little learning curve. On top of that, it provides a great ecosystem of extensions and modules to help to you.
 
-----------
 
 Installation
 -------------
