@@ -1,0 +1,8 @@
+<div id="{{this.Id}}" class="accordion">
+    {{#each items}}
+    <div id="{{../Id}}-{{@index}}" class="accordion-item">
+        <div id="{{../Id}}-{{@index}}-header" class="accordion-item-header {{../Id}}-header"></div>
+        <div id="{{../Id}}-{{@index}}-body" class="accordion-item-body"></div>
+    </div>
+    {{/each}}
+</div>
