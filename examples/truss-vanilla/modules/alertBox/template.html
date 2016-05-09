@@ -1,0 +1,27 @@
+<div class="alert-container clearfix">
+    {{#if icon}}
+    <div class="alert-icon-container">
+        <i class="fa
+            {{#equal iconType 'warning'}}fa-exclamation-circle{{/equal}}
+            {{#equal iconType 'success'}}fa-check-circle{{/equal}}
+            {{#equal iconType 'info'}}fa-info-circle{{/equal}}
+            {{#equal iconType 'danger'}}fa-times-circle{{/equal}} alert-icon">
+        </i>
+    </div>
+    {{/if}}
+
+    <div class="alert-content">
+        {{#if header}}
+        <h4 class="alert-heading">{{{header}}}</h4>
+        {{/if}}
+        {{#if text}}
+        <p class="alert-text">{{{text}}}</p>
+        {{/if}}
+    </div>
+
+    {{#if dismissible}}
+    <div class="alert-close-icon js-close-button">
+        <i class="fa fa-close no-selection"></i>
+    </div>
+    {{/if}}
+</div>
