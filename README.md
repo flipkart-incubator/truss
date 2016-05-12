@@ -19,5 +19,5 @@ Alternatively, you can also include script file in your html as:
 ```
 
 
-[Documentation](http://sp-seller-analytics-qa-0001.stage.ch.flipkart.com:18000/#truss/documentation/introduction)
+Documentation
 -------------
