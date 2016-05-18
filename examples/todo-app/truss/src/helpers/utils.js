@@ -16,6 +16,9 @@ function charsRightIndex(string, chars) {
 }
 
 export default {
+    getLevelsFromPath: function (str, letter) {
+        return ( str.match( RegExp("\\.",'g') ) || [] ).length;
+    },
     getNextUniqueId:  function () {
         return 'UIF-' + (++uniqueIdsTill);
     },
