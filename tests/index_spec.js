@@ -3,7 +3,7 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/basic-app/")
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 1)
+            .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .waitForElementVisible('#content-container', 100)
@@ -17,7 +17,7 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/initon-app/")
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 1)
+            .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .waitForElementVisible('#content-container', 3500)
@@ -31,7 +31,7 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/listensto-app-keep_on/")
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 1)
+            .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .click("#emitter")
@@ -43,7 +43,7 @@ module.exports = {
                 browser.assert.equal(result.value.length, 4);
             })
             .assert.containsText("#content-container section", "Content")
-            .waitForElementVisible('#footer-container', 1)
+            .waitForElementVisible('#footer-container', 100)
             .assert.containsText("#footer-container footer", "Footer")
             .end();
     },
@@ -52,7 +52,7 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/listensto-app-play_after_render/")
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 1)
+            .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .click("#emitter")
@@ -64,7 +64,7 @@ module.exports = {
                 browser.assert.equal(result.value.length, 1);
             })
             .assert.containsText("#content-container section", "Content")
-            .waitForElementVisible('#footer-container', 1)
+            .waitForElementVisible('#footer-container', 100)
             .assert.containsText("#footer-container footer", "Footer")
             .end();
     },
@@ -73,7 +73,7 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/listensto-app-replay/")
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 1)
+            .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .click("#emitter")
@@ -85,7 +85,7 @@ module.exports = {
                 browser.assert.equal(result.value.length, 4);
             })
             .assert.containsText("#content-container section", "Content")
-            .waitForElementVisible('#footer-container', 1)
+            .waitForElementVisible('#footer-container', 100)
             .assert.containsText("#footer-container footer", "Footer")
             .end();
     },
@@ -94,12 +94,12 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/resolve-render-%26-after-render//")
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 1)
+            .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .waitForElementVisible('#content-container', 100)
             .assert.containsText("#content-container .promise-response", "Name: Value")
-            .waitForElementVisible('#footer-container', 1)
+            .waitForElementVisible('#footer-container', 100)
             .assert.containsText("#footer-container footer", "Footer");
 
         browser.expect.element('#content-container').to.not.be.present.after(6000);
