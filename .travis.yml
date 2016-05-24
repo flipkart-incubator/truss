@@ -5,6 +5,7 @@ node_js:
   - "6"
 install:
   - npm install -g http-server
+  - npm install
 script:
   - npm run build
   - npm run test
