@@ -2,6 +2,9 @@ module.exports = {
     "Basic Truss Application Loads": function (browser) {
         browser
             .url("http://127.0.0.1:8080/basic-app/")
+			.getLog('browser', function(result) {
+				console.log(result);
+			})
             .waitForElementVisible('body', 1000)
             .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
