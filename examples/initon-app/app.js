@@ -10,7 +10,7 @@
 // footer will be initialized by content after 3 secs of render.
 // Also, example of custom render call can be found in header and content.
 
-import {createInstance} from "../truss/src";
+import {createInstance} from "../../lib";
 import RootInstance from "./modules/layout";
 
  createInstance({

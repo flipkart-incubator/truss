@@ -57,488 +57,546 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.destroyModuleInstance = destroyModuleInstance;
+	exports.createInstance = createInstance;
+
+	var _es6Promise = __webpack_require__(5);
+
+	var _utils = __webpack_require__(1);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _module = __webpack_require__(3);
+
+	var _module2 = _interopRequireDefault(_module);
+
+	var _store = __webpack_require__(2);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var evtKeepOn = "KEEP_ON",
+	    evtReplay = "RE_PLAY",
+	    evtPlayAfterRender = "PLAY_AFTER_RENDER",
+	    lifeCycleFlags = {
+		booted: true,
+		preRenderResolved: false,
+		rendered: false
+	};
+
+	// STEP:1
+	var _listenForInitOn = function _listenForInitOn(module) {
+
+		if (module.instanceConfig.initOn && module.lifeCycleFlags.rendered) {
+			return _es6Promise.Promise.resolve(module.path);
+		} else {
+			return _callResolveRenderOn(module);
+		}
+	};
+
+	// STEP:2
+	var _callResolveRenderOn = function _callResolveRenderOn(module) {
+		if (module.resolveRenderOn) {
+
+			return module.resolveRenderOn().then(function (res) {
+				module.lifeCycleFlags.preRenderResolved = true;
+				return _lockEvents(module, res);
+			});
+		} else {
+			return _lockEvents(module);
+		}
+	};
+
+	// STEP:3 [Hot events]
+	var _lockEvents = function _lockEvents(module, placeholderResponse) {
+
+		module.instanceConfig.listensTo && module.instanceConfig.listensTo.length && module.instanceConfig.listensTo.filter(function (evt) {
+			if (evt.type === evtPlayAfterRender || !evt.type) {
+				return evt;
+			}
+		}).forEach(function (listener) {
+			module.subscribe({
+				eventName: listener.eventName,
+				callback: module[listener.callback],
+				context: module,
+				eventPublisher: listener.eventPublisher,
+				once: listener.once
+			});
+		});
+
+		return _callRender(module, placeholderResponse);
+	};
+
+	// STEP:4
+	var _callRender = function _callRender(module, placeholderResponse) {
+		// if initOn is present exec below steps on initOn
+		// exec resolveRenderOn (if available)
+		// exec render after resolveRenderOn completes
+		// throw error is render and template are not provided
+		console.log("_callRender called for: " + module.moduleName);
+		_module2.default.createModuleArena(module);
+		return new _es6Promise.Promise(function (res, rej) {
+			// Null to be replaced with resolveRenderOn data
+
+			var compiledHTML = module.render(placeholderResponse, compiledHTML);
+
+			if (module.instanceConfig.onRenderCompelete) {
+				module.onRenderCompelete();
+			}
+
+			res(module.path, compiledHTML);
+			module.lifeCycleFlags.rendered = true;
+		});
+	};
+
+	var _startExec = function _startExec(rootModules) {
+		var compiledHTML = void 0;
+		if (!rootModules) {
+			rootModules = _store.moduleS.filter(function (module) {
+				return module.path.split(".").length === 1;
+			});
+
+			if (_store.isBrowser) {
+				compiledHTML = undefined;
+			}
+		}
+
+		rootModules.forEach(function (rootModule) {
+			// Render this module
+			_listenForInitOn(rootModule).then(function (resolvedPath) {
+				// Get module level
+				var level = _utils2.default.getLevelsFromPath(rootModule.path);
+
+				// Find next level children
+				var childModules = _store.moduleS.filter(function (module) {
+					return module.path.indexOf(resolvedPath + ".") > -1 && _utils2.default.getLevelsFromPath(module.path) === level + 1;
+				});
+
+				// _startExec all next level children                   
+				_startExec(childModules);
+			});
+		});
+	};
+
+	// Only for initON
+	var _registerSubscription = function _registerSubscription(module) {
+
+		module.instanceConfig.initOn && module.subscribe({
+			eventName: module.instanceConfig.initOn.eventName,
+			eventPublisher: module.instanceConfig.initOn.eventPublisher,
+			context: module.instanceConfig,
+			callback: _utils2.default.partial(_callResolveRenderOn, module)
+		});
+
+		module.instanceConfig.listensTo && module.instanceConfig.listensTo.length && module.instanceConfig.listensTo.filter(function (evt) {
+			if (evt.type === evtKeepOn || evt.type === evtReplay) {
+				return evt;
+			}
+		}).forEach(function (listener) {
+			module.subscribe({
+				eventName: listener.eventName,
+				callback: module[listener.callback],
+				context: module,
+				eventPublisher: listener.eventPublisher,
+				once: listener.once,
+				type: listener.type
+			});
+		});
+
+		return _es6Promise.Promise.resolve(module.path);
+	};
+
+	var _registerModule = function _registerModule(config) {
+		var moduleName = arguments.length <= 1 || arguments[1] === undefined ? config.moduleName : arguments[1];
+		var instance = arguments.length <= 2 || arguments[2] === undefined ? config.instance : arguments[2];
+		var instanceConfig = arguments.length <= 3 || arguments[3] === undefined ? config.instanceConfig : arguments[3];
+		var path = arguments.length <= 4 || arguments[4] === undefined ? "" : arguments[4];
+
+		//If root module
+		if (!path) {
+			path = moduleName;
+			// Check if its already present in registered module.
+			// If it is, give warning.
+			// TODO: Add support to override config
+			if (_store.moduleS.findInstance(null, "moduleName", moduleName).length > 0) {
+				console.warning("Module (" + moduleName + ") is already registered at same path. Skipping...");
+				return;
+			}
+		}
+
+		//If child modules
+		if (path) {
+			// Check if its already present in registered module.
+			// If it is, give warning.
+			if (_store.moduleS.findInstance(path).length > 0) {
+				console.warning("Module (" + moduleName + ") is already registered at same path. Skipping...");
+				return;
+			}
+		}
+
+		var moduleDetail = new _module2.default(moduleName, _utils2.default.getNextUniqueId(), path, lifeCycleFlags, instanceConfig, instance);
+
+		// Store module
+		_store.moduleS.insertInstance(moduleDetail);
+		_registerSubscription(moduleDetail);
+
+		// Has child modules
+		if (instance.config && instance.config.modules && instance.config.modules.length) {
+			instance.config.modules.forEach(function (childModule) {
+				_registerModule(childModule, undefined, undefined, undefined, path + "." + childModule.moduleName);
+			});
+		}
+	};
+
+	function destroyModuleInstance(moduleName) {
+		var context = arguments.length <= 1 || arguments[1] === undefined ? window : arguments[1];
+
+
+		// Remove module DOM and unsubscribe ots events
+		var moduleInstance = _store.moduleS.findInstance(moduleName);
+		moduleInstance.forEach(function (module) {
+
+			var moduleSubscriptions = module.getAllSubscriptions();
+			moduleSubscriptions.forEach(function (subscription) {
+				module.unsubscribe(subscription.eventName, subscription.callback);
+			});
+
+			context.document.querySelector("#" + module.getUniqueId()).parentNode.remove();
+		});
+
+		// Remove module from store
+		_store.moduleS.deleteInstance(moduleName);
+
+		// Remove child modules from store
+		var children = _store.moduleS.filter(function (module) {
+			if (module.path.indexOf(moduleName + ".") > -1) {
+				return module;
+			}
+		});
+
+		children.forEach(function (module) {
+			_store.moduleS.deleteInstance(module.moduleName);
+		});
+	};
+
+	function createInstance(config) {
+		_registerModule(config, config.moduleName, config.instance, config.instanceConfig);
+		return _startExec();
+	};
+
+/***/ },
+/* 1 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.PubSub = exports.Truss = undefined;
 
-	var _core = __webpack_require__(1);
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-	var _core2 = _interopRequireDefault(_core);
+	var uniqueIdsTill = -1;
 
-	var _pubsub = __webpack_require__(2);
+	function charsLeftIndex(string, chars) {
+	    var index = -1,
+	        length = string.length;
+
+	    while (++index < length && chars.indexOf(string.charAt(index)) > -1) {}
+	    return index;
+	}
+
+	function charsRightIndex(string, chars) {
+	    var index = string.length;
+
+	    while (index-- && chars.indexOf(string.charAt(index)) > -1) {}
+	    return index;
+	}
+
+	exports.default = {
+	    getLevelsFromPath: function getLevelsFromPath(str, letter) {
+	        return (str.match(RegExp("\\.", 'g')) || []).length;
+	    },
+	    getNextUniqueId: function getNextUniqueId() {
+	        return 'UIF-' + ++uniqueIdsTill;
+	    },
+	    pick: function pick(obj, arr) {
+	        var o = {};
+	        arr.forEach(function (key) {
+	            o[key] = obj[key];
+	        });
+
+	        return o;
+	    },
+	    length: function length(obj) {
+	        if (Array.isArray(obj)) {
+	            return obj.length;
+	        } else if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === "object") {
+	            return Object.keys(obj).length;
+	        } else if (typeof obj === "string") {
+	            return obj.length;
+	        } else {
+	            return 0;
+	        }
+	    },
+	    trim: function trim(string, chars) {
+	        return string.slice(charsLeftIndex(string, chars), charsRightIndex(string, chars) + 1);
+	    },
+	    clearSlashes: function clearSlashes(string) {
+	        return this.trim(string, "/");
+	    },
+	    partial: function partial(fn /*, args...*/) {
+	        // A reference to the Array#slice method.
+	        var slice = Array.prototype.slice;
+	        // Convert arguments object to an array, removing the first argument.
+	        var args = slice.call(arguments, 1);
+
+	        return function () {
+	            // Invoke the originally-specified function, passing in all originally-
+	            // specified arguments, followed by any just-specified arguments.
+	            return fn.apply(this, args.concat(slice.call(arguments, 0)));
+	        };
+	    },
+
+	    getCSSSelector: function getCSSSelector(instanceConfig) {
+	        var instanceConfigO = instanceConfig.instanceConfig;
+	        return instanceConfigO.container + ' ' + instanceConfig.getUniqueId();
+	    }
+	};
+
+/***/ },
+/* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var moduleS = Object.assign([], {
+
+	    insertInstance: function insertInstance(instance, path) {
+	        var pointer = void 0;
+	        if (path) {
+	            pointer = this.getObjByPath(path);
+	        } else {
+	            pointer = this;
+	        }
+	        pointer.push(instance);
+	    },
+
+	    deleteInstance: function deleteInstance(name) {
+
+	        for (var i = this.length - 1; i >= 0; i--) {
+	            if (this[i].moduleName === name) {
+	                this.splice(i, 1);
+	                break;
+	            }
+	        }
+	    },
+
+	    findInstance: function findInstance(name) {
+	        return this.filter(function (module) {
+	            if (module.moduleName === name) {
+	                return module;
+	            }
+	        });
+	    },
+
+	    overrideInstance: function overrideInstance(path, searchKey, searchValue, overrideData, searchInAll) {
+	        var pointer = void 0;
+
+	        if (path) {
+	            pointer = this.getObjByPath(path);
+	        } else {
+	            pointer = this;
+	        }
+
+	        for (var key in overrideData) {
+	            pointer[key] = overrideData[key];
+	        }
+	    }
+	});
+
+	var isBrowser = typeof window !== "undefined";
+
+	var isServer = !isBrowser;
+
+	var subscriptions = {};
+
+	var eventQ = { store: [] };
+
+	exports.isBrowser = isBrowser;
+	exports.subscriptions = subscriptions;
+	exports.moduleS = moduleS;
+	exports.isServer = isServer;
+	exports.eventQ = eventQ;
+
+/***/ },
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	var _utils = __webpack_require__(1);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _store = __webpack_require__(2);
+
+	var _pubsub = __webpack_require__(4);
 
 	var _pubsub2 = _interopRequireDefault(_pubsub);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	exports.Truss = _core2.default;
-	exports.PubSub = _pubsub2.default;
-
-/***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _es6Promise = __webpack_require__(5);
-
-	var _utils = __webpack_require__(3);
-
-	var _utils2 = _interopRequireDefault(_utils);
-
-	var _base = __webpack_require__(4);
-
-	var _base2 = _interopRequireDefault(_base);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/*
-	 * @class CoreConstructor
-	 * @classdesc Creates a core instance
-	 */
-	function CoreConstructor(appConfig) {
-	    var modules = {},
-	        subscriptions = {},
-	        uniqueIdsTill = -1,
-	        allModuleInstances = {};
-
-	    function getNextUniqueId() {
-	        uniqueIdsTill++;
-	        return 'UIF-' + uniqueIdsTill;
-	    }
-
-	    function getModuleInstance(core, moduleName, ModuleBase, config, parentInstanceId) {
-	        //moduleName, uniqueId, instanceConfig, parentInstanceId
-	        var moduleInstance,
-	            moduleBasicExtension,
-	            baseModuleInstance,
-	            module = modules[moduleName],
-	            listensTo = config.instanceConfig.listensTo,
-	            moduleInstanceId;
-
-	        //Create the module
-	        baseModuleInstance = new ModuleBase({
-	            parentInstanceId: parentInstanceId,
-	            moduleName: moduleName,
-	            instanceConfig: config.instanceConfig,
-	            uniqueId: getNextUniqueId(),
-	            parentCssSelector: parentInstanceId ? allModuleInstances[parentInstanceId].moduleInstance.getCssSelector() : undefined
-	        });
-
-	        moduleInstance = core.extend(baseModuleInstance, module.properties);
-	        moduleInstanceId = moduleInstance.getUniqueId();
-
-	        //Add module to the list of composite modules of parent
-	        if (parentInstanceId) {
-	            allModuleInstances[parentInstanceId].modules.push(moduleInstanceId);
-	        } else {
-	            // console.warn("WARNING! parentInstanceId is missing for module " + moduleInstance.getModuleName() + "with id: " + moduleInstanceId);
-	        }
-
-	        allModuleInstances[moduleInstanceId] = {
-	            moduleInstance: moduleInstance,
-	            parentInstanceId: parentInstanceId,
-	            modules: []
-	        };
-
-	        //Create Arena for module
-	        moduleInstance.createPlayArena();
-	        moduleInstance.setup();
-
-	        //Setup event listeners for this module instance
-	        listensTo && listensTo.forEach(function (listener) {
-	            moduleInstance.subscribe({
-	                eventName: listener.eventName,
-	                callback: moduleInstance[listener.callback],
-	                context: moduleInstance,
-	                eventPublisher: listener.eventPublisher,
-	                once: listener.once
-	            });
-	        });
-
-	        return moduleInstance;
-	    }
-
-	    function stopModuleInstantiation(code) {
-	        return new _es6Promise.Promise(function (resolve, reject) {
-	            reject(code);
-	        });
-	    }
-
-	    return {
-	        //Plugins
-	        plugins: {},
-	        register: function register(moduleName, properties) {
-	            if (!modules[moduleName]) {
-	                modules[moduleName] = {
-	                    properties: properties
-	                };
-	            } else {
-	                //Throw error using error framework
-	            }
-	        },
-	        createInstance: function createInstance(moduleObj, instanceConfig, parentInstanceId) {
-	            var moduleName = moduleObj.moduleName,
-	                module = modules[moduleName],
-	                self = this,
-	                createInstancePromise,
-	                moduleInstance,
-	                config,
-	                moduleInstanceId;
-
-	            createInstancePromise = new _es6Promise.Promise(function (resolve, reject) {
-	                if (module && module.properties) {
-	                    // Load the module config
-	                    //modules[moduleName]["config"] = config = module.properties.config;
-
-	                    if (parentInstanceId && !allModuleInstances[parentInstanceId]) {
-	                        return stopModuleInstantiation("CONFIG_FETCHED");
-	                    }
-
-	                    // Create module instance
-	                    moduleInstance = getModuleInstance(self, moduleName, _base2.default, {
-	                        instanceConfig: instanceConfig
-	                    }, parentInstanceId);
-
-	                    moduleInstanceId = moduleInstance.getUniqueId();
-
-	                    var promise = new _es6Promise.Promise(function (resolve) {
-	                        var initOn;
-	                        if (instanceConfig.initOn) {
-	                            initOn = instanceConfig.initOn;
-	                            moduleInstance.subscribe({
-	                                eventName: initOn.eventName,
-	                                callback: function callback(data) {
-	                                    resolve(data);
-	                                },
-	                                context: moduleInstance,
-	                                eventPublisher: initOn.eventPublisher,
-	                                once: true
-	                            });
-
-	                            //Module instance is created and subscribed to events
-	                            moduleInstance.publish(moduleInstance.getModuleName() + '_CREATED', {
-	                                moduleInstanceId: moduleInstanceId
-	                            });
-	                        } else {
-	                            //Module instance is created and subscribed to events
-	                            moduleInstance.publish(moduleInstance.getModuleName() + '_CREATED', {
-	                                moduleInstanceId: moduleInstanceId
-	                            });
-
-	                            resolve();
-	                        }
-	                    });
-
-	                    promise.then(function (data) {
-	                        if (parentInstanceId && !allModuleInstances[parentInstanceId]) {
-	                            return stopModuleInstantiation("SUBSCRIBED");
-	                        }
-
-	                        function publishModuleReady() {
-	                            //Module is fully loaded now and can be used now
-	                            moduleInstance.publish(moduleInstance.getModuleName() + '_READY', {
-	                                moduleInstanceId: moduleInstanceId
-	                            });
-	                        }
-
-	                        return moduleInstance.init(data).then(function () {
-	                            publishModuleReady();
-
-	                            // console.debug("Instantiation Successful:", moduleInstance.getModuleName(), "-", moduleInstance.getUniqueId());
-	                            return true;
-	                        }, function () {
-	                            publishModuleReady();
-
-	                            // console.error("Instantiation Failure:", moduleInstance.getModuleName(), "-", moduleInstance.getUniqueId(), '-', moduleInstance.getCssSelector());
-	                            return true;
-	                        });
-	                    }).then(function () {
-	                        return new _es6Promise.Promise(function (resolve, reject) {
-	                            if (module.properties.config && typeof module.properties.config.then === "function") {
-	                                module.properties.config.then(function (fetchedConfig) {
-	                                    modules[moduleName]["config"] = fetchedConfig;
-	                                    resolve(fetchedConfig);
-	                                }, function (err) {
-	                                    reject(err);
-	                                });
-	                            } else if (module.properties.config) {
-	                                modules[moduleName]["config"] = module.properties.config;
-	                                resolve(module.properties.config);
-	                            } else {
-	                                modules[moduleName]["config"] = {};
-	                                resolve({});
-	                            }
-	                        });
-	                    }).then(function (config) {
-	                        //If module is composite, start inner modules
-	                        if (config.modules) {
-	                            self.loadModule(config.modules);
-	                            var compositeModulePromises = [];
-
-	                            config.modules.forEach(function (module) {
-
-	                                var instanceConfigFromParent = instanceConfig && instanceConfig.modules && instanceConfig.modules.filter(function (m) {
-	                                    return m.moduleName === module.moduleName && m.instanceConfig.container === module.instanceConfig.container;
-	                                })[0],
-	                                    subModuleInstanceConfig = module.instanceConfig;
-
-	                                if (instanceConfigFromParent && instanceConfigFromParent.instanceConfig) {
-	                                    subModuleInstanceConfig.placeholders = instanceConfigFromParent.instanceConfig.placeholders || instanceConfig.placeholders;
-	                                    subModuleInstanceConfig.listensTo = instanceConfigFromParent.instanceConfig.listensTo || instanceConfig.listensTo;
-	                                    subModuleInstanceConfig.autorender = instanceConfigFromParent.instanceConfig.autorender === false ? false : instanceConfig.autorender;
-	                                }
-
-	                                var promise = self.createInstance(module, subModuleInstanceConfig, moduleInstanceId);
-	                                compositeModulePromises.push(promise);
-	                            });
-
-	                            _es6Promise.Promise.all(compositeModulePromises).then(function () {
-	                                if (parentInstanceId && !allModuleInstances[parentInstanceId]) {
-	                                    self.destroyModuleInstance(moduleInstanceId);
-	                                    reject("Module instantiation for " + moduleName + " failed because parent with id " + parentInstanceId + " is already distroyed.");
-	                                }
-	                                resolve(moduleInstanceId);
-	                            }, function () {
-	                                // TODO: Fix this
-	                                if (parentInstanceId && !allModuleInstances[parentInstanceId]) {
-	                                    self.destroyModuleInstance(moduleInstanceId);
-	                                    reject("Module instantiation for " + moduleName + " failed because parent with id " + parentInstanceId + " is already distroyed.");
-	                                }
-	                                resolve(moduleInstanceId);
-	                            });
-	                        } else {
-	                            if (parentInstanceId && !allModuleInstances[parentInstanceId]) {
-	                                self.destroyModuleInstance(moduleInstanceId);
-	                                reject("Module instantiation for " + moduleName + " failed because parent with id " + parentInstanceId + " is already distroyed.");
-	                            }
-	                            resolve(moduleInstanceId);
-	                        }
-	                    }, function (code) {
-	                        //Handle the case when the module instantiation was started but then stopped in-between
-
-	                        switch (code) {
-	                            case "SUBSCRIBED":
-	                                // console.log("Module instantiation for " + moduleName + " failed because parent with id " + parentInstanceId + " is already distroyed.");
-	                                self.destroyModuleInstance(moduleInstanceId);
-	                                break;
-	                        }
-	                    }).catch(function (error) {
-	                        // console.error(error);
-	                        // console.error("Error loading module", moduleName, error.message);
-	                    });
-	                } else {
-	                        //Throw error using error framework
-	                    }
-	            });
-
-	            return createInstancePromise;
-	        },
-	        destroyModuleInstance: function destroyModuleInstance(moduleInstanceId) {
-	            var instanceDetails = allModuleInstances[moduleInstanceId],
-	                parentInstanceId = instanceDetails.parentInstanceId,
-	                parentInstance = parentInstanceId ? allModuleInstances[parentInstanceId] : undefined,
-	                self = this,
-	                moduleInstance,
-	                moduleSubscriptions;
-
-	            if (instanceDetails) {
-	                moduleInstance = instanceDetails.moduleInstance;
-
-	                if (instanceDetails.modules) {
-	                    instanceDetails.modules.forEach(function (instanceId) {
-	                        self.destroyModuleInstance(instanceId);
-	                    });
-	                }
-
-	                //Remove module subscriptions
-	                moduleSubscriptions = moduleInstance.getAllSubscriptions();
-	                moduleSubscriptions.forEach(function (subscription) {
-	                    moduleInstance.unsubscribe(subscription.eventName, subscription.callback);
-	                });
-
-	                //Destroy the module
-	                moduleInstance.destroy();
-
-	                //Destroy arena for this module
-	                moduleInstance.destroyPlayArena(parentInstanceId);
-
-	                moduleInstance.isDestroyed = true;
-	                if (parentInstance) {
-	                    parentInstance.modules = parentInstance.modules.filter(function (id) {
-	                        return id !== moduleInstanceId;
-	                    });
-	                }
-	                delete allModuleInstances[moduleInstanceId];
-	                // console.log("Destroyed:", moduleInstance.getModuleName(), "-", moduleInstance.getUniqueId());
-	            }
-	        },
-	        loadModule: function loadModule(moduleArr) {
-	            var self = this,
-	                moduleList,
-	                modularDependencies;
-
-	            if (!Array.isArray(moduleArr)) {
-	                modularDependencies = [moduleArr];
-	            } else {
-	                modularDependencies = moduleArr;
-	            }
-
-	            modularDependencies.forEach(function (moduleObj) {
-	                var moduleName = moduleObj.moduleName;
-	                if (!modules[moduleName]) {
-	                    if (moduleObj.instance) {
-	                        self.register(moduleName, moduleObj.instance);
-	                    } else {
-	                        logit.error("No module with name " + moduleName);
-	                    }
-	                }
-	            });
-	        },
-	        loadApp: function loadApp(appConfig) {
-	            this.publish('CORE', 'APP_LOADED', appConfig);
-	        },
-	        subscribe: function subscribe(subscription) {
-	            var eventName = subscription.eventName;
-
-	            if (!subscriptions[eventName]) {
-	                subscriptions[eventName] = [];
-	            }
-
-	            subscriptions[eventName].push(_utils2.default.pick(subscription, ['callback', 'eventSubscriber', 'context', 'eventPublisher', 'once']));
-	            // console.debug("Event subscribed:", eventName, subscription);
-	        },
-	        publish: function publish(publisher, eventName, message) {
-	            var subscriptionsForEvent = subscriptions[eventName],
-	                remainingSubscriptions = [];
-
-	            // console.debug("Event published:", eventName, {
-	            //     eventName: eventName,
-	            //     message: message,
-	            //     publisher: publisher,
-	            //     subscription: subscriptionsForEvent
-	            // });
-
-	            if (subscriptionsForEvent && subscriptionsForEvent.length) {
-	                subscriptionsForEvent.forEach(function (subscription) {
-	                    var callback = subscription.callback,
-	                        context = subscription.context,
-	                        subscribeOnce = subscription.once;
-
-	                    if (subscription.eventPublisher) {
-	                        var regex = new RegExp(subscription.eventPublisher + "$");
-	                        if (regex.test(publisher)) {
-	                            callback.apply(context ? context : null, [message]);
-	                            if (!subscribeOnce) {
-	                                remainingSubscriptions.push(subscription);
-	                            }
-	                        } else {
-	                            var actualPublisherHierarchy = publisher.split(' '),
-	                                subscriptionPublisherHierarhcy = subscription.eventPublisher.split(' '),
-	                                a = actualPublisherHierarchy.length,
-	                                b = subscriptionPublisherHierarhcy.length;
-
-	                            while (actualPublisherHierarchy.length && subscriptionPublisherHierarhcy.length) {
-	                                a = actualPublisherHierarchy.length;
-	                                b = subscriptionPublisherHierarhcy.length;
-
-	                                if (actualPublisherHierarchy[a - 1] === subscriptionPublisherHierarhcy[b - 1]) {
-	                                    actualPublisherHierarchy.pop();
-	                                    subscriptionPublisherHierarhcy.pop();
-	                                } else {
-	                                    actualPublisherHierarchy.pop();
-	                                }
-	                            }
-
-	                            if (!subscriptionPublisherHierarhcy.length) {
-	                                // console.debug("Event published. calling..", callback);
-	                                callback.apply(context ? context : null, [message]);
-	                                if (!subscribeOnce) {
-	                                    remainingSubscriptions.push(subscription);
-	                                }
-	                            } else {
-	                                remainingSubscriptions.push(subscription);
-	                            }
-	                        }
-	                    } else {
-	                        callback.apply(context ? context : null, [message]);
-	                        if (!subscribeOnce) {
-	                            remainingSubscriptions.push(subscription);
-	                        }
-	                    }
-	                });
-	            }
-
-	            subscriptions[eventName] = remainingSubscriptions;
-	        },
-	        unsubscribe: function unsubscribe(subscriber, eventName, callback) {
-	            var subscriptionsForEvent = subscriptions[eventName];
-
-	            subscriptions[eventName] = subscriptionsForEvent.filter(function (subscription) {
-	                return !(subscription.callback === callback && subscription.eventSubscriber === subscriber);
-	            });
-
-	            // console.debug("Event unsubscribed:", eventName, subscriptionsForEvent);
-	        },
-	        logAllModuleInstances: function logAllModuleInstances() {
-	            // console.debug(allModuleInstances);
-	        },
-	        extend: function extend(objToExtend, properties) {
-	            function F() {}
-
-	            F.prototype = objToExtend;
-
-	            return Object.assign(new F(), properties);
-	        }
-	    };
-	}
-
-	exports.default = new CoreConstructor();
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-
-	var _core = __webpack_require__(1);
-
-	var _core2 = _interopRequireDefault(_core);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = {
-	    publish: function publish(publisher, eventName, message) {
-	        _core2.default.publish(publisher, eventName, message);
-	    },
-	    subscribe: function subscribe(subscription) {
-	        _core2.default.subscribe(subscription);
-	    },
-	    unsubscribe: function unsubscribe(subscriber, eventName, callback) {
-	        _core2.default.unsubscribe(subscriber, eventName, callback);
-	    }
-	}; /**
-	    * A Plugin extends core and sandbox, NOT JUST CORE
-	    * Sandbox needs to be extended to access the new core methods
-	    *
-	    * A plugin can be used in multiple ways:
-	    * -By a plugin
-	    * -By a module
-	    */
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	"use strict";
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Module = function () {
+		var modulePrivateData = new WeakMap();
+
+		var Module = function (_PubSub) {
+			_inherits(Module, _PubSub);
+
+			function Module(moduleName, uniqueId, path, lifeCycleFlags, instanceConfig, instanceData) {
+				_classCallCheck(this, Module);
+
+				var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Module).call(this));
+
+				_this.moduleName = moduleName;
+				_this.path = path;
+				_this.lifeCycleFlags = lifeCycleFlags;
+				_this.instanceConfig = instanceConfig;
+
+				for (var key in instanceData) {
+					_this[key] = instanceData[key];
+				}
+
+				modulePrivateData.set(_this, {
+					moduleSubscriptions: [],
+					uniqueId: uniqueId
+				});
+				return _this;
+			}
+
+			_createClass(Module, [{
+				key: "render",
+				value: function render(placeholderData) {
+
+					var containerSelector = this.getUniqueId();
+					var placeholders = placeholderData || this.instanceConfig.placeholders;
+					document.querySelector("#" + containerSelector).innerHTML = this.template(placeholders);
+				}
+			}, {
+				key: "getAllSubscriptions",
+				value: function getAllSubscriptions() {
+					return modulePrivateData.get(this).moduleSubscriptions;
+				}
+			}, {
+				key: "getUniqueId",
+				value: function getUniqueId() {
+					return modulePrivateData.get(this).uniqueId;
+				}
+			}, {
+				key: "getParentInstanceId",
+				value: function getParentInstanceId() {
+					var path = this.path.split(".");
+
+					path.pop();
+
+					var parentPath = path.join("."),
+					    parent = _store.moduleS.filter(function (module) {
+						if (module.path === parentPath) {
+							return module.getUniqueId();
+						}
+					});
+
+					if (parent.length) {
+						return parent[0].getUniqueId();
+					} else {
+						return "";
+					}
+				}
+			}, {
+				key: "getModuleContainer",
+				value: function getModuleContainer() {
+					return "#" + this.getUniqueId();
+				}
+			}, {
+				key: "getModuleName",
+				value: function getModuleName() {
+					return this.moduleName;
+				}
+			}, {
+				key: "getInstanceConfig",
+				value: function getInstanceConfig() {
+					return this.instanceConfig.placeholders;
+				}
+			}, {
+				key: "getCSSSelector",
+				value: function getCSSSelector() {
+					return _utils2.default.getCSSSelector();
+				}
+			}, {
+				key: "destroy",
+				value: function destroy() {}
+			}, {
+				key: "subscribe",
+				value: function subscribe(subscription) {
+					var eventName = arguments.length <= 1 || arguments[1] === undefined ? subscription.eventName : arguments[1];
+
+					subscription.eventSubscriber = this.getModuleContainer();
+					modulePrivateData.get(this).moduleSubscriptions.push(subscription);
+					_get(Object.getPrototypeOf(Module.prototype), "subscribe", this).call(this, subscription, eventName);
+				}
+			}, {
+				key: "publish",
+				value: function publish(eventName, message) {
+					_get(Object.getPrototypeOf(Module.prototype), "publish", this).call(this, eventName, message);
+				}
+			}, {
+				key: "unsubscribe",
+				value: function unsubscribe(eventName, callback) {
+					_get(Object.getPrototypeOf(Module.prototype), "unsubscribe", this).call(this, this.getModuleContainer(), eventName, callback);
+				}
+			}], [{
+				key: "createModuleArena",
+				value: function createModuleArena(module, compiledHTML) {
+					// If compiledHTML is not provided, start creating dom element progressively.
+					if (typeof compiledHTML !== "string") {
+						document.querySelector(module.instanceConfig.container).innerHTML = "<div id=\"" + module.getUniqueId() + "\"></div>";
+						return;
+					}
+
+					// If compiledHTML is provided, create page string.
+					if (compiledHTML.trim() === "") {
+						compiledHTML = "<div id=\"" + module.getUniqueId() + "\"></div>";
+					} else {}
+
+					return compiledHTML;
+				}
+			}]);
+
+			return Module;
+		}(_pubsub2.default);
+
+		return Module;
+	}();
+
+	exports.default = Module;
 
 /***/ },
 /* 4 */
@@ -550,87 +608,146 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 
-	var _pubsub = __webpack_require__(2);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _pubsub2 = _interopRequireDefault(_pubsub);
+	var _utils = __webpack_require__(1);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
+	var _store = __webpack_require__(2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function ModuleBase(config) {
-	    var moduleSubscriptions = [];
-	    config = Object.assign({}, config);
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	    this.isDestroyed = false;
-	    this.modulePlaceholders = config.instanceConfig.placeholders;
-	    this.getUniqueId = function () {
-	        return config.uniqueId;
-	    };
-	    this.getParentInstanceId = function () {
-	        return config.parentInstanceId;
-	    };
-	    this.getModuleName = function () {
-	        return config.moduleName;
-	    };
-	    this.getInstanceConfig = function () {
-	        return config.instanceConfig;
-	    };
-	    this.subscribe = function (subscription) {
-	        subscription.eventSubscriber = this.getModuleContainer();
-	        moduleSubscriptions.push(subscription);
-	        _pubsub2.default.subscribe(subscription);
-	    };
-	    this.unsubscribe = function (eventName, callback) {
-	        moduleSubscriptions = moduleSubscriptions.filter(function (subscription) {
-	            return subscription.callback !== callback || subscription.eventName !== eventName;
-	        });
+	var PubSub = function () {
+	    function PubSub() {
+	        _classCallCheck(this, PubSub);
+	    }
 
-	        _pubsub2.default.unsubscribe(this.getModuleContainer(), eventName, callback);
-	    };
-	    this.getAllSubscriptions = function () {
-	        return moduleSubscriptions;
-	    };
+	    _createClass(PubSub, [{
+	        key: "subscribe",
+	        value: function subscribe(subscription) {
+	            var eventName = arguments.length <= 1 || arguments[1] === undefined ? subscription.eventName : arguments[1];
 
-	    this.getArenaContainer = function () {
-	        return config.instanceConfig.container;
-	    };
+	            if (!_store.subscriptions[eventName]) _store.subscriptions[eventName] = [];
+	            var subscriptionData = _utils2.default.pick(subscription, ['callback', 'context', 'eventSubscriber', 'eventPublisher', 'once', 'type']);
+	            _store.subscriptions[eventName].push(subscriptionData);
+	        }
+	    }, {
+	        key: "publish",
+	        value: function publish(eventName, message) {
+	            var publisher = _utils2.default.getCSSSelector(this),
+	                subscriptionsForEvent = _store.subscriptions[eventName],
+	                remainingSubscriptions = [];
 
-	    this.getCssSelector = function () {
-	        return config.parentCssSelector ? config.parentCssSelector + ' ' + this.getArenaContainer() : this.getArenaContainer();
-	    };
-	}
+	            // If any of the subscription is of type Replay
+	            // Push the message to eventQ
+	            var replaySubscriptions = subscriptionsForEvent.filter(function (subs) {
+	                if (subs.type === "RE_PLAY") return subs;
+	            });
+	            if (replaySubscriptions.length) _store.eventQ.store.push({
+	                eventName: eventName,
+	                message: message,
+	                publisher: publisher
+	            });
 
-	ModuleBase.prototype = {
-	    init: function init() {
-	        return this.render();
-	    },
-	    setup: function setup() {
-	        // Nothing to do here
-	    },
-	    destroy: function destroy() {
-	        var containerNode = document.querySelector(this.getModuleContainer());
-	        containerNode.innerHTML = "";
-	    },
-	    createPlayArena: function createPlayArena() {
-	        var selector = this.getParentInstanceId() ? '#' + this.getParentInstanceId() + ' ' + this.getArenaContainer() : this.getArenaContainer(),
-	            themeClass = this.getInstanceConfig().theme ? this.getModuleName() + '-' + this.getInstanceConfig().theme : this.getModuleName() + '-default';
+	            subscriptionsForEvent && subscriptionsForEvent.length && subscriptionsForEvent.forEach(function (subscription) {
 
-	        document.querySelector(selector).innerHTML = '<div id="' + this.getUniqueId() + '" class="' + themeClass + ' play-arena"></div>';
-	    },
-	    destroyPlayArena: function destroyPlayArena() {
-	        var selector = this.getParentInstanceId() ? '#' + this.getParentInstanceId() + ' ' + this.getArenaContainer() + ' #' + this.getUniqueId() : this.getArenaContainer() + ' #' + this.getUniqueId();
-	        var node = document.querySelector(selector);
-	        node.parentNode.removeChild(node);
-	    },
-	    getModuleContainer: function getModuleContainer() {
-	        return '#' + this.getUniqueId();
-	    },
-	    publish: function publish(eventName, message) {
-	        !this.isDestroyed && _pubsub2.default.publish(this.getCssSelector(), eventName, message);
-	    },
-	    hasModuleConfig: true
-	};
+	                var callback = subscription.callback,
+	                    context = subscription.context,
+	                    subscribeOnce = subscription.once,
+	                    subscriptionMatched = false;
 
-	exports.default = ModuleBase;
+	                if (subscription.eventPublisher) {
+	                    var regex = new RegExp(subscription.eventPublisher + "$");
+	                    if (regex.test(publisher)) {
+	                        subscriptionMatched = true;
+	                    } else {
+
+	                        var actualPublisherHierarchy = publisher.split(' '),
+	                            subscriptionPublisherHierarhcy = subscription.eventPublisher.split(' '),
+	                            actualPublisherHierarchyLength = actualPublisherHierarchy.length,
+	                            subscriptionPublisherHierarhcyLength = subscriptionPublisherHierarhcy.length;
+
+	                        while (actualPublisherHierarchy.length && subscriptionPublisherHierarhcy.length) {
+
+	                            actualPublisherHierarchyLength = actualPublisherHierarchy.length;
+	                            subscriptionPublisherHierarhcyLength = subscriptionPublisherHierarhcy.length;
+
+	                            if (actualPublisherHierarchy[actualPublisherHierarchyLength - 1] === subscriptionPublisherHierarhcy[subscriptionPublisherHierarhcyLength - 1]) {
+	                                actualPublisherHierarchy.pop();
+	                                subscriptionPublisherHierarhcy.pop();
+	                            } else {
+	                                actualPublisherHierarchy.pop();
+	                            }
+	                        }
+
+	                        if (!subscriptionPublisherHierarhcy.length) {
+	                            subscriptionMatched = true;
+	                        }
+	                    }
+	                }
+
+	                if (!subscription.eventPublisher || subscriptionMatched) {
+
+	                    // If replay event: publish only after render is complete
+	                    // If replay event: publish all the data matched from event queue
+	                    var publishData = message;
+
+	                    if (subscription.type === "RE_PLAY") {
+	                        publishData = _store.eventQ.store.filter(function (evt) {
+	                            if (evt.publisher === publisher && evt.eventName === eventName) {
+	                                return evt;
+	                            }
+	                        }).map(function (evt) {
+	                            return evt.message;
+	                        });
+	                    }
+
+	                    callback.call(context ? context : null, publishData);
+	                    if (!subscribeOnce) {
+	                        remainingSubscriptions.push(subscription);
+	                    }
+	                } else {
+	                    remainingSubscriptions.push(subscription);
+	                }
+	            });
+
+	            _store.subscriptions[eventName] = remainingSubscriptions;
+	        }
+	    }, {
+	        key: "unsubscribe",
+	        value: function unsubscribe(subscriber, eventName, callback) {
+
+	            var subscriptionsForEvent = _store.subscriptions[eventName];
+
+	            // Check if any RE_PLAY event is there and all the event context is of is same as
+	            // destroy its data from eventQ
+	            var replaySubscriptions = subscriptionsForEvent.filter(function (subscription) {
+	                if (subscription.type === "RE_PLAY") return subscription;
+	            });
+
+	            _store.subscriptions[eventName] = subscriptionsForEvent.filter(function (subscription) {
+	                return !(subscription.callback === callback && subscription.eventSubscriber === subscriber);
+	            });
+
+	            if (replaySubscriptions.length) {
+
+	                if (!_store.subscriptions[eventName].length) {
+	                    // Remove all the items from eventQ with eventName
+	                    _store.eventQ.store = _store.eventQ.store.filter(function (evt) {
+	                        if (evt.eventName !== eventName) return evt;
+	                    });
+	                }
+	            }
+	        }
+	    }]);
+
+	    return PubSub;
+	}();
+
+	exports.default = PubSub;
 
 /***/ },
 /* 5 */

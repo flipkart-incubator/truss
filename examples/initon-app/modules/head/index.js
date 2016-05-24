@@ -3,7 +3,7 @@ import "./style.less";
 
 export default {
     render: function(){
-        const containerSelector = this.uniqueId;
+        const containerSelector = this.getUniqueId();
         const placeholders = this.placeholders;
         document.querySelector(`#${containerSelector}`).innerHTML = template(placeholders);
 
