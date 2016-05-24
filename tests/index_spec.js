@@ -3,12 +3,12 @@ module.exports = {
         browser
             .url("http://127.0.0.1:8080/basic-app/")
 			.waitForElementVisible('body', 1000)
-			.waitForElementVisible('#app-container', 2000)
-			.waitForElementVisible('#header-container', 2000)
+			.waitForElementVisible('#app-container', 20000)
+			.waitForElementVisible('#header-container', 20000)
 			.assert.containsText("#header-container h3", "Header")
-			.waitForElementVisible('#content-container', 2000)
+			.waitForElementVisible('#content-container', 20000)
 			.assert.containsText("#content-container section", "Content")
-			.waitForElementVisible('#footer-container', 2000)
+			.waitForElementVisible('#footer-container', 20000)
 			.assert.containsText("#footer-container footer", "Footer")
             .end();
     },
