@@ -212,3 +212,5 @@ export function createInstance(config) {
 	_registerModule(config, config.moduleName, config.instance, config.instanceConfig);
 	return _startExec();
 };
+
+export default Truss;
