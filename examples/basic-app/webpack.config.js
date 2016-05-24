@@ -8,7 +8,7 @@ var enviroment=require('./enviroment.js');
 
 module.exports = {
     entry: [
-        "./app.js"
+        "babel-polyfill", "./app.js"
     ],
     debug: true,
     devtool: 'source-map',
@@ -37,7 +37,7 @@ module.exports = {
             {
                 test: /\.html$/,
                 loader: "handlebars-loader",
-                query: { 
+                query: {
                     helperDirs: [
                         __dirname + "/template-helpers"
                     ]

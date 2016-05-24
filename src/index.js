@@ -104,7 +104,7 @@ let _startExec = function (rootModules) {
 					return (module.path.indexOf(`${resolvedPath}.`) > -1) && (Utils.getLevelsFromPath(module.path) === (level + 1));
 				});
 
-				// _startExec all next level children                    
+				// _startExec all next level children
 				_startExec(childModules);
 			});
 	});
@@ -213,4 +213,7 @@ export function createInstance(config) {
 	return _startExec();
 };
 
-export default Truss;
+export default {
+	createInstance,
+	destroyModuleInstance
+};

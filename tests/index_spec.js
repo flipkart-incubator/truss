@@ -6,7 +6,7 @@ module.exports = {
 				console.log(result);
 			})
             .waitForElementVisible('body', 1000)
-            .waitForElementVisible('#app-container', 100)
+            .waitForElementVisible('#app-container', 10000)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
             .waitForElementVisible('#content-container', 100)
@@ -19,7 +19,10 @@ module.exports = {
     "Truss initOn works": function (browser) {
         browser
             .url("http://127.0.0.1:8080/initon-app/")
-            .waitForElementVisible('body', 1000)
+			.getLog('browser', function(result) {
+				console.log(result);
+			})
+			.waitForElementVisible('body', 1000)
             .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
             .assert.containsText("#header-container h3", "Header")
@@ -33,6 +36,9 @@ module.exports = {
     "Truss listensTo 'KEEP_ON' works": function (browser) {
         browser
             .url("http://127.0.0.1:8080/listensto-app-keep_on/")
+			.getLog('browser', function(result) {
+				console.log(result);
+			})
             .waitForElementVisible('body', 1000)
             .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
@@ -54,6 +60,9 @@ module.exports = {
     "Truss listensTo 'PLAY_AFTER_RENDER' works": function (browser) {
         browser
             .url("http://127.0.0.1:8080/listensto-app-play_after_render/")
+			.getLog('browser', function(result) {
+				console.log(result);
+			})
             .waitForElementVisible('body', 1000)
             .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
@@ -75,6 +84,9 @@ module.exports = {
     "Truss listensTo 'REPLAY' works": function (browser) {
         browser
             .url("http://127.0.0.1:8080/listensto-app-replay/")
+			.getLog('browser', function(result) {
+				console.log(result);
+			})
             .waitForElementVisible('body', 1000)
             .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)
@@ -95,7 +107,10 @@ module.exports = {
 
     "Truss resolveRenderOn, onRenderCompelete & destroy works": function (browser) {
         browser
-            .url("http://127.0.0.1:8080/resolve-render-%26-after-render//")
+            .url("http://127.0.0.1:8080/resolve-render-%26-after-render/")
+			.getLog('browser', function(result) {
+				console.log(result);
+			})
             .waitForElementVisible('body', 1000)
             .waitForElementVisible('#app-container', 100)
             .waitForElementVisible('#header-container', 100)

@@ -173,7 +173,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					return module.path.indexOf(resolvedPath + ".") > -1 && _utils2.default.getLevelsFromPath(module.path) === level + 1;
 				});
 
-				// _startExec all next level children                   
+				// _startExec all next level children
 				_startExec(childModules);
 			});
 		});
@@ -285,6 +285,11 @@ return /******/ (function(modules) { // webpackBootstrap
 		return _startExec();
 	};
 
+	exports.default = {
+		createInstance: createInstance,
+		destroyModuleInstance: destroyModuleInstance
+	};
+
 /***/ },
 /* 1 */
 /***/ function(module, exports) {
@@ -374,7 +379,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var moduleS = Object.assign([], {
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var moduleS = _extends([], {
 
 	    insertInstance: function insertInstance(instance, path) {
 	        var pointer = void 0;

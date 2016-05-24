@@ -5,9 +5,9 @@
 
   <testsuite name="index_spec"
     errors="0" failures="0" hostname="" id="" package="index_spec" skipped="0"
-    tests="6" time="34.01" timestamp="Tue, 24 May 2016 09:54:30 GMT">
+    tests="6" time="37.79" timestamp="Tue, 24 May 2016 11:57:40 GMT">
   
-    <testcase name="Basic Truss Application Loads" time="3.322" assertions="8">
+    <testcase name="Basic Truss Application Loads" time="4.302" assertions="8">
 
     
 
@@ -26,7 +26,7 @@
     
     </testcase>
   
-    <testcase name="Truss initOn works" time="8.501" assertions="8">
+    <testcase name="Truss initOn works" time="8.880" assertions="8">
 
     
 
@@ -45,28 +45,7 @@
     
     </testcase>
   
-    <testcase name="Truss listensTo &#39;KEEP_ON&#39; works" time="5.806" assertions="9">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    </testcase>
-  
-    <testcase name="Truss listensTo &#39;PLAY_AFTER_RENDER&#39; works" time="5.725" assertions="9">
+    <testcase name="Truss listensTo &#39;KEEP_ON&#39; works" time="6.463" assertions="9">
 
     
 
@@ -87,7 +66,7 @@
     
     </testcase>
   
-    <testcase name="Truss listensTo &#39;REPLAY&#39; works" time="5.790" assertions="9">
+    <testcase name="Truss listensTo &#39;PLAY_AFTER_RENDER&#39; works" time="6.418" assertions="9">
 
     
 
@@ -108,7 +87,28 @@
     
     </testcase>
   
-    <testcase name="Truss resolveRenderOn, onRenderCompelete &amp; destroy works" time="4.867" assertions="9">
+    <testcase name="Truss listensTo &#39;REPLAY&#39; works" time="6.524" assertions="9">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    </testcase>
+  
+    <testcase name="Truss resolveRenderOn, onRenderCompelete &amp; destroy works" time="5.200" assertions="9">
 
     
 
