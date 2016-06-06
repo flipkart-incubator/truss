@@ -13,5 +13,5 @@ import RootInstance from "./modules/layout";
              "header": "Vanilla Truss"
          }
      },
-     "instance": RootInstance
+     "module": RootInstance
  });

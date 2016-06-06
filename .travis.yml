@@ -6,6 +6,7 @@ node_js:
 addons:
   firefox: "46.0.1"
 install:
+  - npm install -g webpack
   - npm install -g http-server
   - npm install
 before_script:

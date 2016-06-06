@@ -49,7 +49,6 @@
     "script-loader": "^0.6.1",
     "style-loader": "^0.13.0",
     "underscore": "1.8.3",
-    "webpack": "^1.12.13",
-    "webpack-dev-server": "^1.14.1"
+    "webpack": "^1.12.13"
   }
 }

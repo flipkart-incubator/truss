@@ -21,7 +21,7 @@ import RootInstance from "./modules/layout";
              "header": "Vanilla Truss: resolveRenderOn & onRenderComplete"
          }
      },
-     "instance": RootInstance
+     "module": RootInstance
  });
 
 

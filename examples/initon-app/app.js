@@ -21,5 +21,5 @@ import RootInstance from "./modules/layout";
              "header": "Truss: initOn example"
          }
      },
-     "instance": RootInstance
+     "module": RootInstance
  });

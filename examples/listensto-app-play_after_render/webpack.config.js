@@ -8,7 +8,7 @@ var enviroment=require('./enviroment.js');
 
 module.exports = {
     entry: [
-		"babel-polyfill", "./app.js"
+		/**"babel-polyfill", **/"./app.js"
     ],
     debug: true,
     devtool: 'source-map',

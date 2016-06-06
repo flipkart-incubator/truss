@@ -27,6 +27,8 @@ let _listenForInitOn = function (module) {
 let _callResolveRenderOn = function (module) {
 	if (module.resolveRenderOn) {
 
+		// if()
+
 		return module.resolveRenderOn().then((res)=> {
 			module.lifeCycleFlags.preRenderResolved = true;
 			return _lockEvents(module, res);
@@ -80,8 +82,9 @@ let _callRender = function (module, placeholderResponse) {
 	});
 };
 
-let _startExec = function (rootModules) {
+let _startExec = function (rootModules, promiseArr) {
 	let compiledHTML;
+
 	if (!rootModules) {
 		rootModules = moduleS.filter((module) => {
 			return module.path.split(".").length === 1;
@@ -94,19 +97,24 @@ let _startExec = function (rootModules) {
 
 	rootModules.forEach((rootModule) => {
 		// Render this module
-		_listenForInitOn(rootModule)
-			.then((resolvedPath) => {
-				// Get module level
-				let level = Utils.getLevelsFromPath(rootModule.path);
+		let moduleResolvePromise = new Promise(function (resolve, reject) {
+			_listenForInitOn(rootModule)
+				.then((resolvedPath) => {
+					resolve();
 
-				// Find next level children
-				let childModules = moduleS.filter((module) => {
-					return (module.path.indexOf(`${resolvedPath}.`) > -1) && (Utils.getLevelsFromPath(module.path) === (level + 1));
+					// Get module level
+					let level = Utils.getLevelsFromPath(rootModule.path);
+
+					// Find next level children
+					let childModules = moduleS.filter((module) => {
+						return (module.path.indexOf(`${resolvedPath}.`) > -1) && (Utils.getLevelsFromPath(module.path) === (level + 1));
+					});
+
+					// _startExec all next level children
+					_startExec(childModules, promiseArr);
 				});
-
-				// _startExec all next level children
-				_startExec(childModules);
-			});
+		});
+		promiseArr.push(moduleResolvePromise);
 	});
 };
 
@@ -142,7 +150,7 @@ let _registerSubscription = function (module) {
 };
 
 
-let _registerModule = function (config, moduleName = config.moduleName, instance = config.instance, instanceConfig = config.instanceConfig, path = "") {
+let _registerModule = function (config, moduleName = config.moduleName, instance = config.module, instanceConfig = config.instanceConfig, path = "") {
 	//If root module
 	if (!path) {
 		path = moduleName;
@@ -150,7 +158,7 @@ let _registerModule = function (config, moduleName = config.moduleName, instance
 		// If it is, give warning.
 		// TODO: Add support to override config
 		if (moduleS.findInstance(null, "moduleName", moduleName).length > 0) {
-			console.warning(`Module (${moduleName}) is already registered at same path. Skipping...`);
+			console.log(`Module (${moduleName}) is already registered at same path. Skipping...`);
 			return;
 		}
 	}
@@ -160,7 +168,7 @@ let _registerModule = function (config, moduleName = config.moduleName, instance
 		// Check if its already present in registered module.
 		// If it is, give warning.
 		if (moduleS.findInstance(path).length > 0) {
-			console.warning(`Module (${moduleName}) is already registered at same path. Skipping...`);
+			console.log(`Module (${moduleName}) is already registered at same path. Skipping...`);
 			return;
 		}
 	}
@@ -206,11 +214,24 @@ export function destroyModuleInstance(moduleName, context = window) {
 	children.forEach((module)=> {
 		moduleS.deleteInstance(module.moduleName);
 	});
+
+	return true;
 };
 
 export function createInstance(config) {
-	_registerModule(config, config.moduleName, config.instance, config.instanceConfig);
-	return _startExec();
+	let moduleResolvePromiseArr = [],
+		promise;
+
+	_registerModule(config, config.moduleName, config.module, config.instanceConfig);
+	_startExec(null, moduleResolvePromiseArr);
+
+	promise = new Promise((res, rej)=>{
+		Promise.all(moduleResolvePromiseArr).then(()=>{
+			res();
+		})
+	});
+
+	return promise;
 };
 
 export default {

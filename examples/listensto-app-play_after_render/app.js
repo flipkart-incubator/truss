@@ -21,5 +21,5 @@ import RootInstance from "./modules/layout";
              "header": "Vanilla Truss: listensTo hot"
          }
      },
-     "instance": RootInstance
+     "module": RootInstance
  });

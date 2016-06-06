@@ -14,7 +14,7 @@ export default {
                 "container": "#header-container",
                 "placeholders": {}
             },
-            "instance": headerModuleInstance
+            "module": headerModuleInstance
         },{
             "moduleName": "contentModule",
             "instanceConfig": {
@@ -31,14 +31,14 @@ export default {
                     type: "KEEP_ON"
                 }]
             },
-            "instance": contentModuleInstance
+            "module": contentModuleInstance
         },{
             "moduleName": "footerModule",
             "instanceConfig": {
                 "container": "#footer-container",
                 "placeholders": {}
             },
-            "instance": footerModuleInstance
+            "module": footerModuleInstance
         }]
     }
 };

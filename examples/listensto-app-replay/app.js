@@ -21,7 +21,7 @@ import RootInstance from "./modules/layout";
              "header": "Vanilla Truss: listensTo Cold"
          }
      },
-     "instance": RootInstance
+     "module": RootInstance
  });
 
 

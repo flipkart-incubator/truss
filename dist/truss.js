@@ -99,6 +99,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _callResolveRenderOn = function _callResolveRenderOn(module) {
 		if (module.resolveRenderOn) {
 
+			// if()
+
 			return module.resolveRenderOn().then(function (res) {
 				module.lifeCycleFlags.preRenderResolved = true;
 				return _lockEvents(module, res);
@@ -150,8 +152,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		});
 	};
 
-	var _startExec = function _startExec(rootModules) {
+	var _startExec = function _startExec(rootModules, promiseArr) {
 		var compiledHTML = void 0;
+
 		if (!rootModules) {
 			rootModules = _store.moduleS.filter(function (module) {
 				return module.path.split(".").length === 1;
@@ -164,18 +167,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		rootModules.forEach(function (rootModule) {
 			// Render this module
-			_listenForInitOn(rootModule).then(function (resolvedPath) {
-				// Get module level
-				var level = _utils2.default.getLevelsFromPath(rootModule.path);
+			var moduleResolvePromise = new _es6Promise.Promise(function (resolve, reject) {
+				_listenForInitOn(rootModule).then(function (resolvedPath) {
+					resolve();
 
-				// Find next level children
-				var childModules = _store.moduleS.filter(function (module) {
-					return module.path.indexOf(resolvedPath + ".") > -1 && _utils2.default.getLevelsFromPath(module.path) === level + 1;
+					// Get module level
+					var level = _utils2.default.getLevelsFromPath(rootModule.path);
+
+					// Find next level children
+					var childModules = _store.moduleS.filter(function (module) {
+						return module.path.indexOf(resolvedPath + ".") > -1 && _utils2.default.getLevelsFromPath(module.path) === level + 1;
+					});
+
+					// _startExec all next level children
+					_startExec(childModules, promiseArr);
 				});
-
-				// _startExec all next level children
-				_startExec(childModules);
 			});
+			promiseArr.push(moduleResolvePromise);
 		});
 	};
 
@@ -209,7 +217,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _registerModule = function _registerModule(config) {
 		var moduleName = arguments.length <= 1 || arguments[1] === undefined ? config.moduleName : arguments[1];
-		var instance = arguments.length <= 2 || arguments[2] === undefined ? config.instance : arguments[2];
+		var instance = arguments.length <= 2 || arguments[2] === undefined ? config.module : arguments[2];
 		var instanceConfig = arguments.length <= 3 || arguments[3] === undefined ? config.instanceConfig : arguments[3];
 		var path = arguments.length <= 4 || arguments[4] === undefined ? "" : arguments[4];
 
@@ -220,7 +228,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			// If it is, give warning.
 			// TODO: Add support to override config
 			if (_store.moduleS.findInstance(null, "moduleName", moduleName).length > 0) {
-				console.warning("Module (" + moduleName + ") is already registered at same path. Skipping...");
+				console.log("Module (" + moduleName + ") is already registered at same path. Skipping...");
 				return;
 			}
 		}
@@ -230,7 +238,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			// Check if its already present in registered module.
 			// If it is, give warning.
 			if (_store.moduleS.findInstance(path).length > 0) {
-				console.warning("Module (" + moduleName + ") is already registered at same path. Skipping...");
+				console.log("Module (" + moduleName + ") is already registered at same path. Skipping...");
 				return;
 			}
 		}
@@ -278,11 +286,24 @@ return /******/ (function(modules) { // webpackBootstrap
 		children.forEach(function (module) {
 			_store.moduleS.deleteInstance(module.moduleName);
 		});
+
+		return true;
 	};
 
 	function createInstance(config) {
-		_registerModule(config, config.moduleName, config.instance, config.instanceConfig);
-		return _startExec();
+		var moduleResolvePromiseArr = [],
+		    promise = void 0;
+
+		_registerModule(config, config.moduleName, config.module, config.instanceConfig);
+		_startExec(null, moduleResolvePromiseArr);
+
+		promise = new _es6Promise.Promise(function (res, rej) {
+			_es6Promise.Promise.all(moduleResolvePromiseArr).then(function () {
+				res();
+			});
+		});
+
+		return promise;
 	};
 
 	exports.default = {
@@ -1731,6 +1752,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var queueIndex = -1;
 
 	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
 	    draining = false;
 	    if (currentQueue.length) {
 	        queue = currentQueue.concat(queue);

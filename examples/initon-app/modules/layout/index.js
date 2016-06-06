@@ -14,7 +14,7 @@ export default {
                 "container": "#header-container",
                 "placeholders": {}
             },
-            "instance": headerModuleInstance
+            "module": headerModuleInstance
         },{
             "moduleName": "contentModule",
             "instanceConfig": {
@@ -25,7 +25,7 @@ export default {
                     eventPublisher: '#header-container'
                 }
             },
-            "instance": contentModuleInstance
+            "module": contentModuleInstance
         },{
             "moduleName": "footerModule",
             "instanceConfig": {
@@ -36,7 +36,7 @@ export default {
                       eventPublisher: '#content-container'
                 }
             },
-            "instance": footerModuleInstance
+            "module": footerModuleInstance
         }]
     }
 };

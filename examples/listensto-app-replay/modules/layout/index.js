@@ -14,7 +14,7 @@ export default {
                 "container": "#header-container",
                 "placeholders": {}
             },
-            "instance": headerModuleInstance
+            "module": headerModuleInstance
         },{
             "moduleName": "contentModule",
             "instanceConfig": {
@@ -31,7 +31,7 @@ export default {
                     type: "RE_PLAY"
                 }]
             },
-            "instance": contentModuleInstance
+            "module": contentModuleInstance
         },{
             "moduleName": "footerModule",
             "instanceConfig": {
@@ -44,7 +44,7 @@ export default {
                     type: "RE_PLAY"
                 }]
             },
-            "instance": footerModuleInstance
+            "module": footerModuleInstance
         }]
     }
 };

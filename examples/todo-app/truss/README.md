@@ -1,2 +1,0 @@
-# truss
-Scalable Javascript Framework
