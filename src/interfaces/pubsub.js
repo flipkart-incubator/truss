@@ -1,14 +1,27 @@
 import Utils from "../helpers/utils";
 import {subscriptions, eventQ} from "./store";
 
-
+/**
+ * @class
+ *
+ */
 class PubSub {
+	/**
+	 * Subscribes to the truss event
+	 * @param subscription {Object} the subscription object
+	 * @param [eventName = subscription.eventName]
+	 */
     subscribe (subscription, eventName = subscription.eventName) {
         if (!subscriptions[eventName]) subscriptions[eventName] = [];
         let subscriptionData = Utils.pick(subscription, ['callback', 'context', 'eventSubscriber', 'eventPublisher', 'once', 'type']);
         subscriptions[eventName].push(subscriptionData);
     };
 
+	/**
+	 * Publishes a truss event
+	 * @param eventName {string}
+	 * @param message {string}
+	 */
     publish (eventName, message) {
         let publisher = Utils.getCSSSelector(this),
             subscriptionsForEvent = subscriptions[eventName],
@@ -91,6 +104,12 @@ class PubSub {
         subscriptions[eventName] = remainingSubscriptions;
     };
 
+	/**
+	 * unsubscribes a truss event
+	 * @param subscriber {Object} the reference of the module which had subscribed the event earlier
+	 * @param eventName {string}
+	 * @param callback {function} the callback method to be unsubscribed
+	 */
     unsubscribe(subscriber, eventName, callback) {
 
         var subscriptionsForEvent = subscriptions[eventName];
