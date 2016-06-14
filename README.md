@@ -73,7 +73,7 @@ MODULE CONFIG STRUCTURE-
     }
     module: <moduleInstance>
 }
-
+[Example of Basic App](examples/basic-app/README.md)
 
 moduleName: (String) This is the name of your custom module.
 
@@ -97,16 +97,20 @@ module: (Module) This contains the imported module from the path of the module.
 TYPES OF LISTENERS-
 
 1.PLAY_AFTER_RENDER: This is the default type of listener. The context of the listener becomes active only after it gets rendered. Therefore, the callback function gets executed only after the listening module gets rendered, and all other calls prior to rendering are ignored.
+    [Example of Play_After_Render](examples/listensto-app-play_after_render/README.md)
 
 2.RE_PLAY: In the case of this type of listener, the context of the listener is present before rendering. The events published before rendering also get reflected, after the module gets rendered, the next time the event is fired. 
+    [Example of Re_Play](examples/listensto-app-replay/README.md)
 
 3.KEEP_ON: In this type of listener, the events published before rendering are recorded, and are re-applied every time the event gets published after rendering.
+    [Example of Keep_On](examples/listensto-app-keep_on/README.md)    
 
 
 
 TRUSS MODULE API-
 
 1.resolveRenderOn- This returns a promise which, on resolution, calls the render function. This function should contain any required pre-rendering tasks .
+    [Example of resolveRenderOn](examples/resolve-render-&-after-render/README.md)
 
 2.render- This function should contain the tasks that are involved in rendering of the module.
 
