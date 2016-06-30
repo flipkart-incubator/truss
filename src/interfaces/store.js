@@ -1,5 +1,12 @@
+/**
+ * @module
+ */
 let moduleS = Object.assign([], {
-
+	/**
+	 * inserts the instance into the module store
+	 * @param instance  of {@link Module}
+	 * @param path {@todo reserved for future use}
+	 */
     insertInstance: function (instance, path) {
         let pointer;
         if (path) {
@@ -10,6 +17,11 @@ let moduleS = Object.assign([], {
         pointer.push(instance);
     },
 
+	/**
+	 * deletes the instance of the module. Removes the entry from the module store
+	 * instance  of {@link Module}
+	 * @param name
+	 */
     deleteInstance: function (name) {
 
         for (var i= this.length-1; i>=0; i--) {
@@ -20,6 +32,11 @@ let moduleS = Object.assign([], {
         }
     },
 
+	/**
+	 * Finds all the instances of the module from the module store
+	 * @param name of the module to be searched
+	 * @returns {Array} of all the instances of the module
+	 */
     findInstance: function (name) {
         return this.filter(function (module) {
             if(module.moduleName === name){
@@ -28,6 +45,13 @@ let moduleS = Object.assign([], {
         });
     },
 
+	/**
+	 * @param path
+	 * @param searchKey
+	 * @param searchValue
+	 * @param overrideData
+	 * @param searchInAll
+	 */
     overrideInstance: function (path, searchKey, searchValue, overrideData, searchInAll) {
         let pointer;
 
@@ -43,12 +67,28 @@ let moduleS = Object.assign([], {
     }
 });
 
+/**
+ * {@todo reserved for future use}
+ * @type {boolean}
+ */
 let isBrowser = typeof window !== "undefined";
 
+/**
+ * {@todo reserved for future use}
+ * @type {boolean}
+ */
 let isServer = !isBrowser;
 
+/**
+ * To be used by {@link pubsub}
+ * {Object} List of all the subscriptions of all the events. Present in the format {"eventName": {subscription object}}
+ */
 let subscriptions = {};
 
+/**
+ *
+ * @type {{store: Array}}
+ */
 let eventQ = {store: []};
 
 export {
