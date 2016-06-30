@@ -16,6 +16,7 @@
   "opts": {
     "encoding": "utf8",
     "destination": "./docs/",
-    "recurse": true
+    "recurse": true,
+	"private": true
   }
 }
