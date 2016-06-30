@@ -35,3 +35,4 @@ node_modules
 .idea
 .idea/*
 incubator-truss.iml
+examples/**/minified/scripts/

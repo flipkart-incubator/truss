@@ -3,6 +3,9 @@ import AboutModule from "./modules/app/about";
 import ContactModule from "./modules/app/contact";
 import CareerModule from "./modules/app/career";
 
+
+import testModule from "./test";
+
 export default [{
 	name: 'layout',
 	path: '/layout',
@@ -45,8 +48,8 @@ export default [{
 		"module": ContactModule
 	}
 },{
-	name: 'layout.career',
-	path: '/career',
+	name: 'layout.career-we',
+	path: '/career/z',
 	module: {
 		"moduleName": "career",
 		"instanceConfig": {
@@ -54,5 +57,16 @@ export default [{
 			"placeholders": {}
 		},
 		"module": CareerModule
+	}
+},{
+	name: 'layout.career-we.test',
+	path: '/:test/:test2',
+	module: {
+		"moduleName": "sahkjdashjk",
+		"instanceConfig": {
+			"container": "#test",
+			"placeholders": {}
+		},
+		"module": testModule
 	}
 }];
