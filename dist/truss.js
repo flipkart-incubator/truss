@@ -567,6 +567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		} else {
 
+			_onBreath(module, _constants2.default.onStatusChange_EVENTS.resolveRenderOnCalled);
 			return _lockEvents(module);
 		}
 	};

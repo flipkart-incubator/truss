@@ -75,6 +75,7 @@ let _callResolveRenderOn = function (module, data) {
 
 	} else {
 
+		_onBreath(module, CONSTANTS.onStatusChange_EVENTS.resolveRenderOnCalled);
 		return _lockEvents(module);
 	}
 

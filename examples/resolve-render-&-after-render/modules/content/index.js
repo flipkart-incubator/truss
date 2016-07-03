@@ -13,6 +13,12 @@ export default {
         console.log(this.getParentInstanceId());
         console.log("On render completed....DOM for module is now available");
     },
+	destroy: function(){
+		console.log("Destroy called");
+	},
+	onStatusChange: function(event){
+		console.log(event);
+	},
     template,
     config: {}
 };

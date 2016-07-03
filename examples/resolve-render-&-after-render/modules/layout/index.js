@@ -22,6 +22,7 @@ export default {
             "module": headerModuleInstance
         }, {
             "moduleName": "contentModule",
+            "name": "contentModule",
             "instanceConfig": {
                 "container": "#content-container",
                 "placeholders": {}
