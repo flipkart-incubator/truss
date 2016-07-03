@@ -1,6 +1,7 @@
 import Utils from "../helpers/utils";
-import {moduleS} from "./store";
+import {moduleS, middleWareFns} from "./store";
 import PubSub from "./pubsub";
+import {createInstance} from "../truss";
 
 /**
  * All the modules created by this framework will be extended by this Module.
@@ -23,22 +24,30 @@ let Module = (function () {
 		 * @param instanceConfig the configuration of the module passed
 		 * @param instanceData It is the reference of module
 		 */
-		constructor(moduleName, uniqueId, path, lifeCycleFlags, instanceConfig, instanceData) {
+		constructor(name, moduleName, lifeCycleFlags, instanceConfig, instanceData, meta) {
 			super();
 
+			// Apply middleware, PRE:_Create
+			middleWareFns.forEach((middlewareFn)=>{
+				Object.assign(this, middlewareFn(this));
+			});
+
 			this.moduleName = moduleName;
-			this.path = path;
+			this.name = name;
+			// this.path = path;
 			this.lifeCycleFlags = lifeCycleFlags;
 			this.instanceConfig = instanceConfig;
+			this.modulePlaceholders = this.instanceConfig.placeholders;
+			this.createInstance = createInstance.bind(this);
+			this.meta = meta;
 
 			for (let key in instanceData) {
 				this[key] = instanceData[key];
 			}
 
-
 			modulePrivateData.set(this, {
 				moduleSubscriptions: [],
-				uniqueId: uniqueId
+				uniqueId: meta.id
 			});
 		}
 
@@ -50,6 +59,9 @@ let Module = (function () {
 
 			const containerSelector = this.getUniqueId();
 			const placeholders = placeholderData || this.instanceConfig.placeholders;
+
+			if(this.template) return;
+
 			document.querySelector(`#${containerSelector}`).innerHTML = this.template(placeholders);
 		};
 
@@ -74,106 +86,68 @@ let Module = (function () {
 		 * @returns {string}
 		 */
 		getParentInstanceId() {
-			let path = this.path.split(".");
-
-			path.pop();
-
-			let parentPath = path.join("."),
-				parent = moduleS.filter((module)=> {
-					if (module.path === parentPath) {
-						return module.getUniqueId()
-					}
-				});
-
-			if (parent.length) {
-				return parent[0].getUniqueId();
-			} else {
-				return "";
+			if(this.meta.parent){
+				return this.meta.parent.id
 			}
+
+			return "";
 		};
 
-		/**
-		 *
-		 * @returns {string}
-		 */
 		getModuleContainer() {
 			return `#${this.getUniqueId()}`;
 		};
 
-		/**
-		 *
-		 * @returns {Module.moduleName}
-		 */
 		getModuleName() {
 			return this.moduleName;
 		};
 
-		/**
-		 *
-		 * @returns {Module.instanceConfig.placeholders}
-		 */
 		getInstanceConfig() {
 			return this.instanceConfig.placeholders;
 		};
 
-		/**
-		 *
-		 * @returns {string}
-		 */
 		getCSSSelector() {
-			return Utils.getCSSSelector();
+			return Utils.getCSSSelector(this, moduleS);
 		};
 
-		/**
-		 * @todo destroy the module instance
-		 */
 		destroy() {
 
 		};
 
-		/**
-		 * subscribe to the event
-		 * @param subscription
-		 * @param [eventName = subscription.eventName] {string}
-		 */
 		subscribe(subscription, eventName = subscription.eventName) {
 			subscription.eventSubscriber = this.getModuleContainer();
 			modulePrivateData.get(this).moduleSubscriptions.push(subscription);
 			super.subscribe(subscription, eventName);
 		};
 
-		/**
-		 * calls {@link PubSub.publish}
-		 * @param eventName {string}
-		 * @param message {string}
-		 */
 		publish(eventName, message) {
 			super.publish(eventName, message);
 		};
 
-		/**
-		 *
-		 * calls {@link PubSub.unsubscribe}
-		 * @param eventName {string}
-		 * @param callback {function} the callback function to be unsubscribed
-		 */
 		unsubscribe(eventName, callback) {
+			if(typeof eventName === "object"){
+				callback = eventName.callback;
+				eventName = eventName.eventName;
+			}
 			super.unsubscribe(this.getModuleContainer(), eventName, callback);
 		};
 
 
-		/**
-		 * This creates a new <i> div </i> element with the id same as the unique ID of the module. If compiledHTML is not provided, dom element is created progressively else page string is created.
-		 * @param module module to be rendered
-		 * @param compiledHTML {"string"|""}
-		 * @returns {string|undefined}
-		 */
 		static createModuleArena(module, compiledHTML) {
+			// If compiledHTML is not provided, start creating dom element progressively.
+			let themeClass ="";
+
+			if(module.instanceConfig.moduleClassName){
+				themeClass = module.instanceConfig.theme ? module.instanceConfig.moduleClassName + '-' + module.instanceConfig.theme : module.instanceConfig.moduleClassName + '-default';
+			} else {
+				themeClass = module.instanceConfig.theme ? module.moduleName + '-' + module.instanceConfig.theme : module.moduleName + '-default';
+			}
+
 			if (typeof compiledHTML !== "string") {
-				document.querySelector(module.instanceConfig.container).innerHTML = `<div id="${module.getUniqueId()}"></div>`;
+				document.querySelector(module.instanceConfig.container).innerHTML = `<div id="${module.getUniqueId()}" class="${themeClass} play-arena"></div>`;
 				return;
 			}
 
+			// If compiledHTML is provided, create page string.
 			if (compiledHTML.trim() === "") {
 				compiledHTML = `<div id="${module.getUniqueId()}"></div>`;
 			} else {

@@ -5,27 +5,20 @@ let moduleS = Object.assign([], {
 	/**
 	 * inserts the instance into the module store
 	 * @param instance  of {@link Module}
-	 * @param path {@todo reserved for future use}
 	 */
-    insertInstance: function (instance, path) {
-        let pointer;
-        if (path) {
-            pointer = this.getObjByPath(path);
-        } else {
-            pointer = this;
-        }
-        pointer.push(instance);
+    insertInstance: function (instance) {
+		this.push(instance);
     },
 
 	/**
 	 * deletes the instance of the module. Removes the entry from the module store
 	 * instance  of {@link Module}
-	 * @param name
+	 * @param id
 	 */
-    deleteInstance: function (name) {
+    deleteInstance: function (id) {
 
         for (var i= this.length-1; i>=0; i--) {
-            if (this[i].moduleName === name) {
+            if (this[i].meta.id === id) {
                 this.splice(i, 1);
                 break;
             }
@@ -37,34 +30,23 @@ let moduleS = Object.assign([], {
 	 * @param name of the module to be searched
 	 * @returns {Array} of all the instances of the module
 	 */
-    findInstance: function (name) {
-        return this.filter(function (module) {
-            if(module.moduleName === name){
-                return module;
-            }
-        });
-    },
-
-	/**
-	 * @param path
-	 * @param searchKey
-	 * @param searchValue
-	 * @param overrideData
-	 * @param searchInAll
-	 */
-    overrideInstance: function (path, searchKey, searchValue, overrideData, searchInAll) {
-        let pointer;
-
-        if (path) {
-            pointer = this.getObjByPath(path);
-        } else {
-            pointer = this;
-        }
-
-        for (var key in overrideData) {
-            pointer[key] = overrideData[key];
-        }
-    }
+	findInstance: function (id, name) {
+		if(id){
+			return this.filter(function (module) {
+				if(module.meta.id === id){
+					return module;
+				}
+			});
+		} else if(name){
+			return this.filter(function (module) {
+				if(module.name === name){
+					return module;
+				}
+			});
+		} else {
+			return [];
+		}
+	}
 });
 
 /**
@@ -91,10 +73,13 @@ let subscriptions = {};
  */
 let eventQ = {store: []};
 
+let middleWareFns = [];
+
 export {
     isBrowser,
     subscriptions,
     moduleS,
     isServer,
-    eventQ
+    eventQ,
+	middleWareFns
 };

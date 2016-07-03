@@ -15,10 +15,21 @@ function charsRightIndex(string, chars) {
     return index;
 }
 
+
+let hiddenDiv = document.getElementById('trussExtensionsEventDiv');
+
+function communicateToExtension(data) {
+	if(!hiddenDiv) return;
+    let customEvent = document.createEvent('Event', {
+        detail: data
+    });
+    customEvent.initEvent('trussExtensionsEvents', true, true);
+    hiddenDiv.dispatchEvent(customEvent);
+}
+
 export default {
-    getLevelsFromPath: function (str, letter) {
-        return ( str.match( RegExp("\\.",'g') ) || [] ).length;
-    },
+    communicateToExtension,
+
     getNextUniqueId:  function () {
         return 'UIF-' + (++uniqueIdsTill);
     },
@@ -60,8 +71,22 @@ export default {
         };
     },
 
-    getCSSSelector: function (instanceConfig) {
-        let instanceConfigO = instanceConfig.instanceConfig;
-        return `${instanceConfigO.container} ${instanceConfig.getUniqueId()}`;
+    getCSSSelector: function (instanceConfig, moduleStore) {
+
+		try {
+			let cssSelector = `${instanceConfig.instanceConfig.container}`;
+
+			let tempParent = instanceConfig.meta.parent && instanceConfig.meta.parent.pointer ? instanceConfig.meta.parent.pointer : undefined;
+
+			while(tempParent) {
+				cssSelector = `${tempParent.instanceConfig.container} ${cssSelector}`;
+				tempParent = tempParent.parent && tempParent.parent.pointer ? tempParent.parent.pointer.meta.id : undefined;
+			}
+
+			return cssSelector;
+		}
+		catch(err) {
+			return "";
+		}
     }
 };

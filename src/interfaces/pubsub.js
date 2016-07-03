@@ -1,5 +1,5 @@
 import Utils from "../helpers/utils";
-import {subscriptions, eventQ} from "./store";
+import {moduleS, subscriptions, eventQ} from "./store.js";
 
 /**
  * @class
@@ -16,16 +16,26 @@ class PubSub {
         let subscriptionData = Utils.pick(subscription, ['callback', 'context', 'eventSubscriber', 'eventPublisher', 'once', 'type']);
         subscriptions[eventName].push(subscriptionData);
     };
+    /**
+     * Publishes a truss event
+     * @param eventName {string}
+     * @param message {string}
+     */
+    publish(eventName, message) {
+		let publisher = "";
+		if(arguments.length === 3){
+			publisher = arguments[0] || "";
+			eventName = arguments[1];
+			message = arguments[2];
+		} else {
+			publisher = Utils.getCSSSelector(this);
+		}
+		var subscriptionsForEvent = subscriptions[eventName],
+			remainingSubscriptions = [];
 
-	/**
-	 * Publishes a truss event
-	 * @param eventName {string}
-	 * @param message {string}
-	 */
-    publish (eventName, message) {
-        let publisher = Utils.getCSSSelector(this),
-            subscriptionsForEvent = subscriptions[eventName],
-            remainingSubscriptions = [];
+		if(!subscriptionsForEvent){
+			return;
+		}
 
         // If any of the subscription is of type Replay
         // Push the message to eventQ
@@ -92,7 +102,7 @@ class PubSub {
                     });
                 }
 
-                callback.call(context ? context : null, publishData);
+                callback.call((context ? context : null), publishData);
                 if (!subscribeOnce) {
                     remainingSubscriptions.push(subscription);
                 }
@@ -113,6 +123,9 @@ class PubSub {
     unsubscribe(subscriber, eventName, callback) {
 
         var subscriptionsForEvent = subscriptions[eventName];
+		if(!subscriptionsForEvent) {
+			return;
+		}
 
         // Check if any RE_PLAY event is there and all the event context is of is same as
         // destroy its data from eventQ

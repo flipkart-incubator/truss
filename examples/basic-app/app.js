@@ -2,10 +2,10 @@
 // APIS: createInstance
 // Configs: container, placeholders
 
-import {createInstance} from "../../lib";
-import RootInstance from "./modules/layout";
+import Truss from "../../lib";
+import RootInstance from "apps/layout";
 
- createInstance({
+Truss.createInstance({
      "moduleName": "layout",
      "instanceConfig": {
          "container": "#app-container",
