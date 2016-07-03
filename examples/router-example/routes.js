@@ -3,13 +3,10 @@ import AboutModule from "./modules/app/about";
 import ContactModule from "./modules/app/contact";
 import CareerModule from "./modules/app/career";
 
-
-import testModule from "./test";
-
 export default [{
 	name: 'layout',
 	path: '/layout',
-	module: {
+	moduleConfig: {
 		"moduleName": "layout",
 		"instanceConfig": {
 			"container": "#app-container",
@@ -28,7 +25,7 @@ export default [{
 },{
 	name: 'layout.about',
 	path: '/about',
-	module: {
+	moduleConfig: {
 		"moduleName": "about",
 		"instanceConfig": {
 			"container": "#page-container",
@@ -39,7 +36,7 @@ export default [{
 },{
 	name: 'layout.contact',
 	path: '/contact',
-	module: {
+	moduleConfig: {
 		"moduleName": "contact",
 		"instanceConfig": {
 			"container": "#page-container",
@@ -48,25 +45,14 @@ export default [{
 		"module": ContactModule
 	}
 },{
-	name: 'layout.career-we',
-	path: '/career/z',
-	module: {
+	name: 'layout.career',
+	path: '/career',
+	moduleConfig: {
 		"moduleName": "career",
 		"instanceConfig": {
 			"container": "#page-container",
 			"placeholders": {}
 		},
 		"module": CareerModule
-	}
-},{
-	name: 'layout.career-we.test',
-	path: '/:test/:test2',
-	module: {
-		"moduleName": "sahkjdashjk",
-		"instanceConfig": {
-			"container": "#test",
-			"placeholders": {}
-		},
-		"module": testModule
 	}
 }];

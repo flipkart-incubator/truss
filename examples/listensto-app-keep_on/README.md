@@ -1,44 +1,46 @@
-### Truss Example - listensTo[PLAY_AFTER_RENDER]
+### Truss Example - listensTo[KEEP_ON]
 
-##### listensTo
+##### listensTo[KEEP_ON]
 - Accepts an array of objects to configure.
 - "eventName" and "callback" are the mandatory fields.
 - "eventName" is the name of event on which we want to trigger the "callback" function.
 - "callback" is the name of function present on module which needs to be invoked whenever the mentioned event is triggered.
 - In case we need to listen for event from some particular module we can pass the container of that module as "eventPublisher"
 - We can also provide a type of listensTo. Default is PLAY_AFTER_RENDER if its not provided.
-- PLAY_AFTER_RENDER type intructs Truss to invoke its "callback" function only if module has been rendered. All the evnts triggered before module rendering will be ingored.
+- When type is provided as KEEP_ON, callback function will be invoked everytime after module creation, even if it has not been rendered on page.
 
-app.js is the entry point for this application. Example demonstrate listensTo type "PLAY_AFTER_RENDER".
+app.js is the entry point for this application. Example demonstrate listensTo type "KEEP_ON".
+
 - Function Invocation on event trigger using listensTo. Example:
 ```javascript
 {
-		"moduleName": "contentModule",
-		"instanceConfig": {
-			"container": "#content-container",
-			"placeholders": {},
-			"initOn": {
-				"eventName": 'INIT_CONTENT_MODULE',
-				"eventPublisher": '#header-container'
-			},
-			"listensTo": [{
-				"eventName": "ADD_TIMESTAMP",
-				"eventPublisher": '#header-container',
-				"callback": 'addTimestamp'
-                "type": "PLAY_AFTER_RENDER"
-			}]
-		},
-		"module": contentModuleInstance
+            "moduleName": "contentModule",
+            "instanceConfig": {
+                "container": "#content-container",
+                "placeholders": {},
+                "initOn": {
+                    eventName: 'INIT_CONTENT_MODULE',
+                    eventPublisher: '#header-container'
+                },
+                "listensTo" : [{
+                    eventName: "ADD_TIMESTAMP",
+                    eventPublisher: '#header-container',
+                    callback: 'addTimestamp',
+                    type: "KEEP_ON"
+                }]
+            },
+            "module": contentModuleInstance
 }
 ```
-In the above example contentModule is listening for event "ADD_TIMESTAMP" from '#header-container'. Whenver the event willbe triggered, it will invoke 'addTimestamp' function of the module.
+In the above example contentModule is listening for event "ADD_TIMESTAMP" from '#header-container'.
+Whenver the event willbe triggered, it will invoke 'addTimestamp' function of the module.
 
 
 
 ##### Other features of Truss used in app
 - Truss.createInstance which can be used to initialize any module.
 - Default rendering capabilty of modules. If render function is not available on module and template is exposed to Truss then Truss will compile the template with provided data to generate the html and insert it inside container.
-- Custom redering of modules [modules/context] - Modules can define their own render fuction and handle the way it requires to render the view. Modules content and head has its own render fuction in this app.
+- Custom redering of modules - Modules can define their own render fuction and handle the way it requires to render the view. Modules content and head has its own render fuction in this app.
 - Delayed render using initOn - Rendering of a module can be delayed using listensTo config. Whenever the event stated in the config is triggered, it will invoke the render function of module. Example:
 
 ```javascript

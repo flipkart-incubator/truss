@@ -475,6 +475,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**This is the major framework file.
+	                                                                                                                                                                                                                                                                   * @exports {
+	                                                                                                                                                                                                                                                                   * 	createInstance: creates a new instance of the module.
+	                                                                                                                                                                                                                                                                   * 	destroyModuleInstance: destroys the module instance
+	                                                                                                                                                                                                                                                                   *
+	                                                                                                                                                                                                                                                                   * }
+	                                                                                                                                                                                                                                                                   */
+
 	exports.destroyModuleInstance = destroyModuleInstance;
 	exports.createInstance = createInstance;
 	exports.use = use;
@@ -494,14 +503,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _constants2 = _interopRequireDefault(_constants);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	/**This is the major framework file.
-	 * @exports {
-	 * 	createInstance: creates a new instance of the module.
-	 * 	destroyModuleInstance: destroys the module instance
-	 *
-	 * }
-	 */
 
 	var _onBreath = function _onBreath(module, eventName) {
 
@@ -780,6 +781,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		var parentName = config.name ? config.name.split(".") : undefined,
 		    foundModules = void 0;
+
+		if (instanceConfig.placeholders && instance && instance.config && instance.config.placeholders) {
+			instanceConfig.placeholders = _extends(instance.config.placeholders, instanceConfig.placeholders);
+		}
 
 		if (this instanceof _module2.default) {
 			(function () {
@@ -1127,6 +1132,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 					var containerSelector = this.getUniqueId();
 					var placeholders = placeholderData || this.instanceConfig.placeholders;
+
+					if (!this.template) return;
+
 					document.querySelector("#" + containerSelector).innerHTML = this.template(placeholders);
 				}
 			}, {

@@ -60,7 +60,7 @@ let Module = (function () {
 			const containerSelector = this.getUniqueId();
 			const placeholders = placeholderData || this.instanceConfig.placeholders;
 
-			if(this.template) return;
+			if(!this.template) return;
 
 			document.querySelector(`#${containerSelector}`).innerHTML = this.template(placeholders);
 		};

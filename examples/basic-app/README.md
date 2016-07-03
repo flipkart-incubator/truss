@@ -1,10 +1,11 @@
 ### Truss Basic Example
 
-This is a very basic example which demonstrate the usage of
+This is a very basic example. In which app.js is the entry point for this application.
 
-- app.js is the entry point for this application.
+In app.js we can see usage of:
 - Truss.createInstance which can be used to initialize any module.
 - Truss.createInstance method accept one parameter as object. And expect it to have schema like:
+
 ```json
 "moduleName": "String", // to identify the module
 "instanceConfig": {

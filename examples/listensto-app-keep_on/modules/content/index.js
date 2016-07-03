@@ -14,6 +14,7 @@ export default {
             }
 
             list.innerHTML += html + `<li>${date}</li>`;
+			this.data = [];
         } else {
             this.data.push(date);
         }

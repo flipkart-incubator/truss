@@ -286,6 +286,9 @@ let _registerModule = function (moduleName, config, instance = config.module, in
 	let parentName = config.name ? config.name.split(".") : undefined,
 		foundModules;
 
+	if(instanceConfig.placeholders && instance && instance.config && instance.config.placeholders){
+		instanceConfig.placeholders = Object.assign(instance.config.placeholders, instanceConfig.placeholders);
+	}
 
 	if (this instanceof Module) {
 

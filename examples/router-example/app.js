@@ -2,9 +2,11 @@
 // APIS: createInstance
 // Configs: container, placeholders
 
-import TrussRouter from "./truss-router/src";
-import appConfig from "./appConfig";
+import Truss from "../../lib";
+import TrussRouter from "../../truss_router/lib";
+import appConfig from "./routes";
 
+TrussRouter.init(Truss);
 TrussRouter.configure(appConfig, {
 	useHash: true,
 	hashPrefix: '',
@@ -13,5 +15,4 @@ TrussRouter.configure(appConfig, {
 	history: true,
 	defaultRoute: 'layout'
 });
-
 TrussRouter.start();
