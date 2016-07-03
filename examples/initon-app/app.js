@@ -10,16 +10,16 @@
 // footer will be initialized by content after 3 secs of render.
 // Also, example of custom render call can be found in header and content.
 
-import {createInstance} from "../../lib";
-import RootInstance from "./modules/layout";
+import Truss from "../../lib";
+import LayoutModule from "apps/layout";
 
- createInstance({
-     "moduleName": "layout",
-     "instanceConfig": {
-         "container": "#app-container",
-         "placeholders": {
-             "header": "Truss: initOn example"
-         }
-     },
-     "module": RootInstance
- });
+Truss.createInstance({
+	"moduleName": "layout",
+	"instanceConfig": {
+		"container": "#app-container",
+		"placeholders": {
+			"header": "Truss: initOn example"
+		}
+	},
+	"module": LayoutModule
+});

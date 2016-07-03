@@ -17,8 +17,8 @@
   "license": "MIT",
   "scripts": {
     "start": "webpack-dev-server",
-    "dev": "node custom--wp-loaders/config-loader.js; webpack",
-    "watch": "node custom-wp-loaders/config-loader.js; webpack --watch"
+    "dev": "webpack",
+    "dev:watch": "webpack --watch"
   },
   "dependencies": {
     "handlebars": "^4.0.5",

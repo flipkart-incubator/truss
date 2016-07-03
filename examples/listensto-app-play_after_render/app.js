@@ -10,16 +10,16 @@
 // header will have a button, on click of that timestamp should be added in content
 // but context will be initialized after 6 secs of rendering header.
 
-import {createInstance} from "../../lib";
+import Truss from "../../lib";
 import RootInstance from "./modules/layout";
 
- createInstance({
-     "moduleName": "layout",
-     "instanceConfig": {
-         "container": "#app-container",
-         "placeholders": {
-             "header": "Vanilla Truss: listensTo hot"
-         }
-     },
-     "module": RootInstance
- });
+Truss.createInstance({
+	"moduleName": "layout",
+	"instanceConfig": {
+		"container": "#app-container",
+		"placeholders": {
+			"header": "Vanilla Truss: listensTo hot"
+		}
+	},
+	"module": RootInstance
+});

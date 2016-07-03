@@ -1,21 +1,34 @@
-### Truss Basic Example
+### Truss Example - initOn
 
-This is a very basic example which demonstrate the usage of
+##### initOn
+- Accepts an object to configure.
+- "eventName" is the mandatory field.
+- "eventName" is the name of event on which we want to trigger the "callback"
+- In case we need to listen for event from some particular module we can pass the container of that module as "eventPublisher"
 
+This example demonstrate the usage of initOn to delay the invocation on render fucntion.
+
+```javascript
+"moduleName": "footerModule",
+"instanceConfig": {
+  "container": "#footer-container",
+  "placeholders": {},
+  "initOn": {
+    "eventName": 'INIT_FOOTER_MODULE',
+    "eventPublisher": '#content-container'
+  }
+},
+"module": footerModuleInstance
+```
+In the above example, footer module is listening for "INIT_FOOTER_MODULE" triggered from module whose container is "#content-container" to invoke its render function.
+
+
+
+##### Other features of Truss used in app
 - app.js is the entry point for this application.
 - Truss.createInstance which can be used to initialize any module.
-- Truss.createInstance method accept one parameter as object. And expect it to have schema like:
-```json
-"moduleName": "String", // to identify the module
-"instanceConfig": {
-     "container": "CSS selector", // Container inside which view of module to be rendered
-     "placeholders": {
-		//Any custom data/detail which module or its template requires
-     }
-},
-"module": "Object" // Module object to be passes
-```
 - Default rendering capabilty of modules. If render function is not available on module and template is exposed to Truss then Truss will compile the template with provided data to generate the html and insert it inside container.
+- Custom redering of modules - Modules can define their own render fuction and handle the way it requires to render the view. Modules content and head has its own render fuction in this app.
 
 
 #### How to run application.

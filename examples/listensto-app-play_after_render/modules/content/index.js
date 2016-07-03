@@ -6,6 +6,5 @@ export default {
 
         list.innerHTML += `<li>${date}</li>`;
     },
-    template,
-    config: {}
+    template
 };
