@@ -1,5 +1,5 @@
 let defaultVal = {
-	"value": "Durgesh",
+	"value": "ASDF",
 	"id": 4567,
 	"style": "border-bottom-color: rgb(0, 68, 68);"
 };
@@ -7,7 +7,7 @@ let defaultVal = {
 export default function state(state = defaultVal, action) {
 	switch (action.type) {
 		case "CHANGE_EXTRACT":
-			return Object.assign({}, state);
+			return Object.assign({}, action);
 		default:
 			return Object.assign({}, state);
 	}
