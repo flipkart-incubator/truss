@@ -446,15 +446,22 @@ export function destroyModuleInstance(module, context = window) {
  *         <li>container {String} Css selector of the container element. This should be unique.
  *         <li>listensTo {Array} [Optional] the list of events that the module will listen to.
  *         </ul>
- *  <li>4. resolveRenderOn: {function}</li>
  * </ul>
- * @returns {Promise} Resolves when all the modules are rendered.
+ * @returns {Promise|undefined} Resolves when all the modules are rendered.
  */
 export function createInstance(config) {
 	let moduleResolvePromiseArr = [],
 		promise,
 		patchModules = [];
 
+	if(!config || !config.moduleName || !config.module || !config.instanceConfig) {
+		console.log("the config provided to create module instance in invalid!");
+        return;
+	}
+	if(!config.instanceConfig.container || !config.instanceConfig.listensTo) {
+		console.log("the instance config provided to the module "+ config.moduleName+" is incorrect");
+        return;
+	}
 	_registerModule.call(this, config.moduleName, config, config.module, config.instanceConfig, patchModules);
 	_startExec.call(this, patchModules, moduleResolvePromiseArr);
 

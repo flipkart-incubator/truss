@@ -31,6 +31,9 @@ let Router = new Router5(),
  */
 let addMethodsOnInstance = function (routeMap, Truss) {
 
+    if(!routeMap || !routeMap.moduleConfig || !routeMap.name || !routeMap.path) {
+        console.log("the route provided is incorrect");
+    }
     routesStore[routeMap.moduleConfig.name] = routeMap.moduleConfig;
 
     routeMap["canActivate"] = function (toRoute, fromRoute, done) {
