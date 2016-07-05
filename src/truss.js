@@ -1,7 +1,8 @@
 /**This is the major framework file.
  * @exports {
  * 	createInstance: creates a new instance of the module.
- * 	destroyModuleInstance: destroys the module instance
+ * 	destroyModuleInstance: destroys the module instance,
+ * 	use: use it if you want to extend Truss
  *
  * }
  */
@@ -11,6 +12,12 @@ import Module from "./interfaces/module.js";
 import {moduleS, middleWareFns} from "./interfaces/store";
 import CONSTANTS from "./constants";
 
+/**
+ *
+ * @param module [Object] Truss module
+ * @param eventName [string]
+ * @private
+ */
 let _onBreath = function (module, eventName) {
 
 	if (module[CONSTANTS.MODULE_EVENTS.onStatusChange]) {
@@ -18,6 +25,12 @@ let _onBreath = function (module, eventName) {
 	}
 };
 
+/**
+ * Publishes the event when state of the module changes
+ * @param moduleDetail [object] module
+ * @param eventName [string]
+ * @private
+ */
 let _emitLifeCycleEvent = function (moduleDetail, eventName) {
 
 	moduleDetail.publish(`${moduleDetail.getModuleName()}${eventName}`, {
@@ -48,6 +61,7 @@ let _listenForInitOn = function (module) {
 /**
  *
  * @param {Module} module to be rendered.
+ * @param {*} data the data to be passed to module while initialization
  * <p>Calls {@link Module.resolveRenderOn} method . This method is passed from the config for the module and after
  * resolveRenderOn is resolved, lifecycle status is changed to "preRenderResolved". The resolveRenderOn should return
  * {Promise}</p>
