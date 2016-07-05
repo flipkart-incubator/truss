@@ -4,11 +4,11 @@
     "dictionaries": ["jsdoc","closure"]
   },
   "source": {
-    "include": ["./src"],
+    "include": ["./src", "./truss_router/src", "./README.md"],
     "includePattern": ".+\\.js(doc)?$",
     "excludePattern": "(^|\\/|\\\\)_"
   },
-  "plugins": [],
+  "plugins": ["plugins/markdown"],
   "templates": {
     "cleverLinks": false,
     "monospaceLinks": false

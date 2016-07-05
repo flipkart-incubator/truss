@@ -1,6 +1,4 @@
-/**
- * @module
- */
+
 let moduleS = Object.assign([], {
 	/**
 	 * inserts the instance into the module store
@@ -75,6 +73,9 @@ let eventQ = {store: []};
 
 let middleWareFns = [];
 
+/**
+ * @module
+ */
 export {
     isBrowser,
     subscriptions,

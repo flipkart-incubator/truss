@@ -1,6 +1,6 @@
 /**
  * This router extends the functionality of Router 5. Mostly the methods used in this router are simple wrapper around Router 5
- * @external http://router5.github.io/
+ * @link external:http://router5.github.io/
  */
 import {Router5, loggerPlugin} from "router5";
 import historyPlugin from "router5-history";
@@ -14,10 +14,10 @@ let Router = new Router5(),
     routesStore = {},
     lastState;
 /**
- *
- * @param routeMap [object] of the format
+ * @param routeMap {object}of the below
+ * format
  * {
- *      moduleConfig:Config object of the module
+ *      moduleConfig: Config object of the module
  *      name: name of the route
  *      path: path of the route
  * }
@@ -27,7 +27,7 @@ let Router = new Router5(),
  *
  * <p>Similarly if shouldDestroy is present in the moduleConfig of the module then the method is called.
  * If the value returned is false then the module is not destryed on route change.</p>
- *
+ * @param Truss
  */
 let addMethodsOnInstance = function (routeMap, Truss) {
 
@@ -83,19 +83,24 @@ let iterateToAddMethodsOnInstance = function (routeMap, Truss) {
 };
 
 export default {
+
     /**
      *
-     * @param routeMap [array] of objects in the format
+     * @param Truss {Truss} Framework
+     */
+    init: function(Truss){
+        this.Truss = Truss;
+    },
+
+    /**
+     * @param routeMap {array} of objects in the format
      * {
      *      moduleConfig:Config object of the module
      *      name: name of the route
      *      path: path of the route
      * }
-     * @param config [object] Router configuration . This method internally calls the Router.setOption method of Router 5
+     * @param config {object} Router configuration . This method internally calls the Router.setOption method of Router 5
      */
-    init: function(Truss){
-        this.Truss = Truss;
-    },
     configure: function (routeMap, config) {
         iterateToAddMethodsOnInstance(routeMap, this.Truss);
         Router.add(routeMap);
