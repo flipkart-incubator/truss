@@ -800,16 +800,16 @@ return /******/ (function(modules) { // webpackBootstrap
 		var parentName = config.name ? config.name.split(".") : undefined,
 		    foundModules = void 0;
 
-		var configFromParent = void 0;
-		if (parent && parent.instanceConfig && parent.instanceConfig.modules) {
-			parent.instanceConfig.modules.forEach(function (parentSiblings) {
-				if (parentSiblings.moduleName == moduleName) {
-					configFromParent = parentSiblings.instanceConfig;
-				}
+		if (parent && parent.instanceConfig && parent.instanceConfig.modules && parent.instanceConfig.modules.length) {
+
+			var configFromParent = parent.instanceConfig.modules.filter(function (parentSibling) {
+				return parentSibling.moduleName === moduleName;
 			});
-			if (configFromParent) {
-				instanceConfig.placeholders = configFromParent.placeholders || instanceConfig.placeholders;
-				instanceConfig.listensTo = configFromParent.listensTo || instanceConfig.listensTo;
+
+			if (configFromParent && configFromParent.length) {
+				var parentInstance = configFromParent[0].instanceConfig || {};
+				instanceConfig.placeholders = parentInstance.placeholders || instanceConfig.placeholders;
+				instanceConfig.listensTo = parentInstance.listensTo || instanceConfig.listensTo;
 			}
 		}
 
