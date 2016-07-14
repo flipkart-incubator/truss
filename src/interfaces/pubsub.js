@@ -15,6 +15,7 @@ class PubSub {
         if (!subscriptions[eventName]) subscriptions[eventName] = [];
         let subscriptionData = Utils.pick(subscription, ['callback', 'context', 'eventSubscriber', 'eventPublisher', 'once', 'type']);
         subscriptions[eventName].push(subscriptionData);
+		console.debug("Event subscribed:", eventName, subscription);
     };
     /**
      * Publishes a truss event
@@ -36,6 +37,13 @@ class PubSub {
 		if(!subscriptionsForEvent){
 			return;
 		}
+
+		console.debug("Event published:", eventName, {
+			eventName: eventName,
+			message: message,
+			publisher: publisher,
+			subscription: subscriptionsForEvent
+		});
 
         // If any of the subscription is of type Replay
         // Push the message to eventQ
@@ -138,6 +146,7 @@ class PubSub {
             return !(subscription.callback === callback && subscription.eventSubscriber === subscriber);
         });
 
+		console.debug("Event unsubscribed:", eventName, subscriptionsForEvent);
 
         if(replaySubscriptions.length){
 
