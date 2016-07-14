@@ -458,7 +458,7 @@ export function createInstance(config) {
 		console.log("the config provided to create module instance in invalid!");
         return;
 	}
-	if(!config.instanceConfig.container || !config.instanceConfig.listensTo) {
+	if(!config.instanceConfig.container) {
 		console.log("the instance config provided to the module "+ config.moduleName+" is incorrect");
         return;
 	}

@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 	exports.PubSubHelper = undefined;
 
@@ -71,10 +71,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var PubSubHelper = exports.PubSubHelper = new _pubsub2.default();
 
+	/**
+	 * @
+	 */
 	exports.default = {
-	    createInstance: _truss.createInstance,
-	    destroyModuleInstance: _truss.destroyModuleInstance,
-	    use: _truss.use
+	  createInstance: _truss.createInstance,
+	  destroyModuleInstance: _truss.destroyModuleInstance,
+	  use: _truss.use
 	};
 
 /***/ },
@@ -192,9 +195,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	/**
-	 * @module
-	 */
 	var moduleS = _extends([], {
 		/**
 	  * inserts the instance into the module store
@@ -269,6 +269,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var middleWareFns = [];
 
+	/**
+	 * @module
+	 */
 	exports.isBrowser = isBrowser;
 	exports.subscriptions = subscriptions;
 	exports.moduleS = moduleS;
@@ -479,7 +482,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /**This is the major framework file.
 	                                                                                                                                                                                                                                                                   * @exports {
 	                                                                                                                                                                                                                                                                   * 	createInstance: creates a new instance of the module.
-	                                                                                                                                                                                                                                                                   * 	destroyModuleInstance: destroys the module instance
+	                                                                                                                                                                                                                                                                   * 	destroyModuleInstance: destroys the module instance,
+	                                                                                                                                                                                                                                                                   * 	use: use it if you want to extend Truss
 	                                                                                                                                                                                                                                                                   *
 	                                                                                                                                                                                                                                                                   * }
 	                                                                                                                                                                                                                                                                   */
@@ -504,6 +508,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	/**
+	 *
+	 * @param module [Object] Truss module
+	 * @param eventName [string]
+	 * @private
+	 */
 	var _onBreath = function _onBreath(module, eventName) {
 
 		if (module[_constants2.default.MODULE_EVENTS.onStatusChange]) {
@@ -511,6 +521,12 @@ return /******/ (function(modules) { // webpackBootstrap
 		}
 	};
 
+	/**
+	 * Publishes the event when state of the module changes
+	 * @param moduleDetail [object] module
+	 * @param eventName [string]
+	 * @private
+	 */
 	var _emitLifeCycleEvent = function _emitLifeCycleEvent(moduleDetail, eventName) {
 
 		moduleDetail.publish("" + moduleDetail.getModuleName() + eventName, {
@@ -541,6 +557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 *
 	 * @param {Module} module to be rendered.
+	 * @param {*} data the data to be passed to module while initialization
 	 * <p>Calls {@link Module.resolveRenderOn} method . This method is passed from the config for the module and after
 	 * resolveRenderOn is resolved, lifecycle status is changed to "preRenderResolved". The resolveRenderOn should return
 	 * {Promise}</p>
@@ -930,15 +947,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *         <li>container {String} Css selector of the container element. This should be unique.
 	 *         <li>listensTo {Array} [Optional] the list of events that the module will listen to.
 	 *         </ul>
-	 *  <li>4. resolveRenderOn: {function}</li>
 	 * </ul>
-	 * @returns {Promise} Resolves when all the modules are rendered.
+	 * @returns {Promise|undefined} Resolves when all the modules are rendered.
 	 */
 	function createInstance(config) {
 		var moduleResolvePromiseArr = [],
 		    promise = void 0,
 		    patchModules = [];
 
+		if (!config || !config.moduleName || !config.module || !config.instanceConfig) {
+			console.log("the config provided to create module instance in invalid!");
+			return;
+		}
+		if (!config.instanceConfig.container) {
+			console.log("the instance config provided to the module " + config.moduleName + " is incorrect");
+			return;
+		}
 		_registerModule.call(this, config.moduleName, config, config.module, config.instanceConfig, patchModules);
 		_startExec.call(this, patchModules, moduleResolvePromiseArr);
 
