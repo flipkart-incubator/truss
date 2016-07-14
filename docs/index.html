@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Truss</h1><p>Truss is a JavaScript framework to develop modular, event based applications.</p>
+<p>It helps you write applications that are high performant with little learning curve. On top of that, it provides a great ecosystem of extensions and modules to help to you.</p>
+<h2>Installation</h2><p>To install the latest version:</p>
+<pre class="prettyprint source"><code>npm install trussjs@https://github.com/flipkart-incubator/truss.git</code></pre><p>Alternatively, you can also include script file in your html as:</p>
+<pre class="prettyprint source"><code>&lt;script src=&quot;https://raw.githubusercontent.com/flipkart-incubator/truss/master/dist/truss.min.js&quot;>&lt;/script></code></pre><h2>Documentation</h2><h4>Module-</h4><p>Any view/html/behaviour that you see on the page comes from some module. Module represents a section/area on the page.
+For example, module can be a Header module consisting of an Logo, Title, Username &amp; Password fields and Login button. 
+The look and feel, behaviour of the header section on the page is defined by Header Module.</p>
+<h4>Core Truss Module Functions-</h4><p>createInstance- returns a promise, which gets resolved when the module gets rendered</p>
+<p>destroyInstance- destroys the module instance</p>
+<h4>Module Config Structure-</h4><pre class="prettyprint source"><code>{
+moduleName: &quot;&lt;Name of your module>&quot;,
+
+instanceConfig: {
+
+    container: &quot;&lt;css selector of the module>”,
+
+    placeholders: {
+
+        (optional)key:value 
+
+    },
+
+    initOn(optional):{
+
+        eventName: &lt;Name of the event>
+
+        eventPublisher: &lt;css selector of event publisher>
+
+    }
+
+    listensTo:[{
+
+        eventName: &lt;Name of the event>,
+
+        callback: &lt;Name of the callback function>
+
+        type(optional): &lt;Type of event listener>
+
+    }]
+
+}
+module: &lt;moduleInstance>
+}</code></pre><p><a href="examples/basic-app/README.md">Example of Basic App</a></p>
+<p>moduleName: (String) This is the name of your custom module.</p>
+<p>container: (String) This is the css selector, where you want your module to be stitched.</p>
+<p>placeholders: (JSON) These are written as key value pairs. The key represents the placeholder for some data to be included in the HTML, and the value is the corresponding data.</p>
+<p>initOn: (JSON) Initialises the module, if the event gets published. Use this if you want to conditionally initialise the module.</p>
+<p>listensTo: (Array) This contains an Array of Event Listeners that the module is subscribed to.</p>
+<p>eventName: (String) Contains the name of the event.</p>
+<p>callback: (String) Function to be called when the event gets published.</p>
+<p>type: (String) The type of listener. The various types are defined below.</p>
+<p>module: (Module) This contains the imported module from the path of the module. </p>
+<h4>Types of Listeners-</h4><p>1.PLAY_AFTER_RENDER: This is the default type of listener. The context of the listener becomes active only after it gets rendered. Therefore, the callback function gets executed only after the listening module gets rendered, and all other calls prior to rendering are ignored.
+    <a href="examples/listensto-app-play_after_render/README.md">Example of Play_After_Render</a></p>
+<p>2.RE_PLAY: In the case of this type of listener, the context of the listener is present before rendering. The events published before rendering also get reflected, after the module gets rendered, the next time the event is fired. 
+    <a href="examples/listensto-app-replay/README.md">Example of Re_Play</a></p>
+<p>3.KEEP_ON: In this type of listener, the events published before rendering are recorded, and are re-applied every time the event gets published after rendering.
+    <a href="examples/listensto-app-keep_on/README.md">Example of Keep_On</a>    </p>
+<h4>Truss Module API-</h4><p>1.resolveRenderOn- This returns a promise which, on resolution, calls the render function. This function should contain any required pre-rendering tasks .
+    <a href="examples/resolve-render-&amp;-after-render/README.md">Example of resolveRenderOn</a></p>
+<p>2.render- This function should contain the tasks that are involved in rendering of the module.</p>
+<p>3.onRenderComplete- This function is called after completion of render, and should contain post-rendering tasks.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Module.html">Module</a></li><li><a href="module-src_interfaces_store.html">src/interfaces/store</a></li></ul><h3>Classes</h3><ul><li><a href="module-Module-Module.html">Module</a></li><li><a href="PubSub.html">PubSub</a></li></ul><h3>Global</h3><ul><li><a href="global.html#_callRender">_callRender</a></li><li><a href="global.html#_callResolveRenderOn">_callResolveRenderOn</a></li><li><a href="global.html#_emitLifeCycleEvent">_emitLifeCycleEvent</a></li><li><a href="global.html#_listenForInitOn">_listenForInitOn</a></li><li><a href="global.html#_lockEvents">_lockEvents</a></li><li><a href="global.html#_onBreath">_onBreath</a></li><li><a href="global.html#_registerModule">_registerModule</a></li><li><a href="global.html#_registerSubscription">_registerSubscription</a></li><li><a href="global.html#_startExec">_startExec</a></li><li><a href="global.html#addMethodsOnInstance">addMethodsOnInstance</a></li><li><a href="global.html#createInstance">createInstance</a></li><li><a href="global.html#deleteInstance">deleteInstance</a></li><li><a href="global.html#destroyModuleInstance">destroyModuleInstance</a></li><li><a href="global.html#eventQ">eventQ</a></li><li><a href="global.html#findInstance">findInstance</a></li><li><a href="global.html#insertInstance">insertInstance</a></li><li><a href="global.html#isBrowser">isBrowser</a></li><li><a href="global.html#isServer">isServer</a></li><li><a href="global.html#iterateToAddMethodsOnInstance">iterateToAddMethodsOnInstance</a></li><li><a href="global.html#lifeCycleFlags">lifeCycleFlags</a></li><li><a href="global.html#Router">Router</a></li><li><a href="global.html#subscriptions">subscriptions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Tue Jul 05 2016 12:45:01 GMT+0530 (IST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

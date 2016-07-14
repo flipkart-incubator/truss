@@ -9,6 +9,7 @@
     "test": "test"
   },
   "scripts": {
+    "doc": "./node_modules/.bin/jsdoc -c conf.json",
     "lint": "./node_modules/.bin/eslint ./src",
     "build": "npm run build:commonjs && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
