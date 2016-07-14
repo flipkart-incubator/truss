@@ -48,6 +48,6 @@
     "router5": "3.0.3",
     "router5-history": "3.0.3",
     "router5-link-interceptor": "3.0.0",
-    "router5-listener": "3.0.0"
+    "router5-listeners": "3.0.0"
   }
 }
