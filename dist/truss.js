@@ -325,6 +325,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!_store.subscriptions[eventName]) _store.subscriptions[eventName] = [];
 	            var subscriptionData = _utils2.default.pick(subscription, ['callback', 'context', 'eventSubscriber', 'eventPublisher', 'once', 'type']);
 	            _store.subscriptions[eventName].push(subscriptionData);
+	            console.debug("Event subscribed:", eventName, subscription);
 	        }
 	    }, {
 	        key: "publish",
@@ -349,6 +350,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!subscriptionsForEvent) {
 	                return;
 	            }
+
+	            console.debug("Event published:", eventName, {
+	                eventName: eventName,
+	                message: message,
+	                publisher: publisher,
+	                subscription: subscriptionsForEvent
+	            });
 
 	            // If any of the subscription is of type Replay
 	            // Push the message to eventQ
@@ -451,6 +459,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _store.subscriptions[eventName] = subscriptionsForEvent.filter(function (subscription) {
 	                return !(subscription.callback === callback && subscription.eventSubscriber === subscriber);
 	            });
+
+	            console.debug("Event unsubscribed:", eventName, subscriptionsForEvent);
 
 	            if (replaySubscriptions.length) {
 
@@ -898,7 +908,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function destroyModuleInstance(module) {
 		var context = arguments.length <= 1 || arguments[1] === undefined ? window : arguments[1];
 
-
 		/// Remove module DOM and unsubscribe its events
 		var moduleInstance = void 0;
 		if (typeof module === "string") {
@@ -964,6 +973,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {Promise|undefined} Resolves when all the modules are rendered.
 	 */
 	function createInstance(config) {
+		var modulesToDestory = _store.moduleS.filter(function (moduleInstance) {
+			return moduleInstance.instanceConfig.container === config.instanceConfig.container;
+		});
+
+		modulesToDestory.forEach(function (moduleInstance) {
+			destroyModuleInstance(moduleInstance);
+		});
+
 		var moduleResolvePromiseArr = [],
 		    promise = void 0,
 		    patchModules = [];

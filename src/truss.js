@@ -396,7 +396,6 @@ let _registerModule = function (moduleName, config, instance = config.module, in
  * @returns {boolean} true when module gets deleted successfully
  */
 export function destroyModuleInstance(module, context = window) {
-
 	/// Remove module DOM and unsubscribe its events
 	let moduleInstance;
 	if(typeof module === "string"){
@@ -463,6 +462,14 @@ export function destroyModuleInstance(module, context = window) {
  * @returns {Promise|undefined} Resolves when all the modules are rendered.
  */
 export function createInstance(config) {
+	let modulesToDestory = moduleS.filter((moduleInstance)=>{
+		return moduleInstance.instanceConfig.container === config.instanceConfig.container;
+	});
+
+	modulesToDestory.forEach((moduleInstance)=>{
+		destroyModuleInstance(moduleInstance);
+	});
+
 	let moduleResolvePromiseArr = [],
 		promise,
 		patchModules = [];
