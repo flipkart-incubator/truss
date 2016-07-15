@@ -84,7 +84,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -109,23 +109,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return index;
 	}
 
-	var hiddenDiv = document.getElementById('trussExtensionsEventDiv');
-
-	function communicateToExtension(data) {
-	    if (!hiddenDiv) return;
-	    var customEvent = document.createEvent('Event', {
-	        detail: data
-	    });
-	    customEvent.initEvent('trussExtensionsEvents', true, true);
-	    hiddenDiv.dispatchEvent(customEvent);
-	}
-
 	exports.default = {
-	    communicateToExtension: communicateToExtension,
 
 	    getNextUniqueId: function getNextUniqueId() {
 	        return 'UIF-' + ++uniqueIdsTill;
 	    },
+
 	    pick: function pick(obj, arr) {
 	        var o = {};
 	        arr.forEach(function (key) {
@@ -134,10 +123,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        return o;
 	    },
+
 	    length: function length(obj) {
 	        if (Array.isArray(obj)) {
 	            return obj.length;
-	        } else if ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === "object") {
+	        } else if ((typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object") {
 	            return Object.keys(obj).length;
 	        } else if (typeof obj === "string") {
 	            return obj.length;
@@ -145,12 +135,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return 0;
 	        }
 	    },
+
 	    trim: function trim(string, chars) {
 	        return string.slice(charsLeftIndex(string, chars), charsRightIndex(string, chars) + 1);
 	    },
+
 	    clearSlashes: function clearSlashes(string) {
 	        return this.trim(string, "/");
 	    },
+
 	    partial: function partial(fn /*, args...*/) {
 	        // A reference to the Array#slice method.
 	        var slice = Array.prototype.slice;
@@ -167,12 +160,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    getCSSSelector: function getCSSSelector(instanceConfig, moduleStore) {
 
 	        try {
-	            var cssSelector = '' + instanceConfig.instanceConfig.container;
+	            var cssSelector = "" + instanceConfig.instanceConfig.container;
 
 	            var tempParent = instanceConfig.meta.parent && instanceConfig.meta.parent.pointer ? instanceConfig.meta.parent.pointer : undefined;
 
 	            while (tempParent) {
-	                cssSelector = tempParent.instanceConfig.container + ' ' + cssSelector;
+	                cssSelector = tempParent.instanceConfig.container + " " + cssSelector;
 	                tempParent = tempParent.parent && tempParent.parent.pointer ? tempParent.parent.pointer.meta.id : undefined;
 	            }
 
@@ -180,6 +173,41 @@ return /******/ (function(modules) { // webpackBootstrap
 	        } catch (err) {
 	            return "";
 	        }
+	    },
+
+	    configValidator: function configValidator(config) {
+	        var isValid = true;
+
+	        if (!config) {
+	            console.error("Config is mandatory to create instance of any module.");
+	            isValid = false;
+	        }
+
+	        if (!config.moduleName) {
+	            console.error("moduleName property on config is require field to create instance of any module.");
+	            isValid = false;
+	        }
+
+	        if (typeof config.moduleName !== "string") {
+	            console.error("moduleName property on config should be string.");
+	            isValid = false;
+	        }
+
+	        if (!config.module || _typeof(config.module) !== "object") {
+	            console.error("module property on config is mandatory and should be object");
+	            isValid = false;
+	        }
+
+	        if (!config.instanceConfig || config.instanceConfig && !config.instanceConfig.container) {
+	            console.error("instanceConfig property and instanceConfig.container is mandatory");
+	            isValid = false;
+	        }
+
+	        if (!isValid) {
+	            console.dirxml(config);
+	        }
+
+	        return isValid;
 	    }
 	};
 
@@ -301,6 +329,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+	var subscribeLogger = function subscribeLogger(eventName, subscription) {
+	    console.group("Event Subscribed");
+	    console.info(eventName);
+	    console.dirxml(subscription);
+	    console.groupEnd();
+	};
+
+	var publishLogger = function publishLogger(eventName, publishData) {
+	    console.group("Event Published");
+	    console.info(eventName);
+	    console.dirxml(publishData);
+	    console.groupEnd();
+	};
+
+	var unsubscribeLogger = function unsubscribeLogger(eventName, subscription) {
+	    console.group("Event UnSubscribed");
+	    console.info(eventName);
+	    console.dirxml(subscription);
+	    console.groupEnd();
+	};
+
 	/**
 	 * @class
 	 *
@@ -325,7 +374,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (!_store.subscriptions[eventName]) _store.subscriptions[eventName] = [];
 	            var subscriptionData = _utils2.default.pick(subscription, ['callback', 'context', 'eventSubscriber', 'eventPublisher', 'once', 'type']);
 	            _store.subscriptions[eventName].push(subscriptionData);
-	            console.debug("Event subscribed:", eventName, subscription);
+	            subscribeLogger(eventName, subscription);
 	        }
 	    }, {
 	        key: "publish",
@@ -351,7 +400,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return;
 	            }
 
-	            console.debug("Event published:", eventName, {
+	            publishLogger(eventName, {
 	                eventName: eventName,
 	                message: message,
 	                publisher: publisher,
@@ -460,7 +509,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return !(subscription.callback === callback && subscription.eventSubscriber === subscriber);
 	            });
 
-	            console.debug("Event unsubscribed:", eventName, subscriptionsForEvent);
+	            unsubscribeLogger(eventName, subscriptionsForEvent);
 
 	            if (replaySubscriptions.length) {
 
@@ -576,26 +625,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _callResolveRenderOn = function _callResolveRenderOn(module, data) {
 
 		_module2.default.createModuleArena(module);
+
 		if (module[_constants2.default.MODULE_EVENTS.resolveRenderOn]) {
 
 			var moduleResoved = module[_constants2.default.MODULE_EVENTS.resolveRenderOn](data);
 			if (moduleResoved instanceof Promise) {
 
-				return moduleResoved.then(function (res) {
-
+				var onPromiseComplete = function onPromiseComplete(res) {
 					module.lifeCycleFlags.preRenderResolved = true;
 					_onBreath(module, _constants2.default.onStatusChange_EVENTS.resolveRenderOnCalled);
 					return _lockEvents(module, res);
-				});
+				};
+
+				return moduleResoved.then(onPromiseComplete).catch(onPromiseComplete);
 			} else {
 
 				_onBreath(module, _constants2.default.onStatusChange_EVENTS.resolveRenderOnCalled);
-				return _lockEvents(module, module[_constants2.default.MODULE_EVENTS.resolveRenderOn](data));
+				return _lockEvents(module, moduleResoved);
 			}
 		} else {
 
 			_onBreath(module, _constants2.default.onStatusChange_EVENTS.resolveRenderOnCalled);
-			return _lockEvents(module);
+			return _lockEvents(module, data);
 		}
 	};
 
@@ -656,7 +707,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				_onBreath(module, _constants2.default.onStatusChange_EVENTS.onRenderCompleteCalled);
 			}
 
-			res(module.path, compiledHTML);
+			res();
 			module.lifeCycleFlags.rendered = true;
 			_emitLifeCycleEvent(module, "_READY");
 		});
@@ -697,11 +748,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				_listenForInitOn(rootModule).then(function () {
 
-					resolve();
-					rootModule.meta.children && rootModule.meta.children.forEach(function (module) {
+					if (rootModule.meta.children && rootModule.meta.children.length) {
+						rootModule.meta.children && rootModule.meta.children.forEach(function (module) {
 
-						_startExec([module.pointer], promiseArr);
-					});
+							_startExec([module.pointer], promiseArr);
+						});
+					}
+					resolve(rootModule.meta.id);
 				});
 			});
 
@@ -767,7 +820,6 @@ return /******/ (function(modules) { // webpackBootstrap
 		});
 
 		_onBreath(module, _constants2.default.onStatusChange_EVENTS.keepOnReplaySubscribed);
-		return Promise.resolve(module.path);
 	};
 
 	/**
@@ -973,6 +1025,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @returns {Promise|undefined} Resolves when all the modules are rendered.
 	 */
 	function createInstance(config) {
+
+		if (!_utils2.default.configValidator(config)) return;
+
 		var modulesToDestory = _store.moduleS.filter(function (moduleInstance) {
 			return moduleInstance.instanceConfig.container === config.instanceConfig.container;
 		});
@@ -985,32 +1040,15 @@ return /******/ (function(modules) { // webpackBootstrap
 		    promise = void 0,
 		    patchModules = [];
 
-		if (!config || !config.moduleName || !config.module || !config.instanceConfig) {
-			console.log("the config provided to create module instance in invalid!");
-			return;
-		}
-		if (!config.instanceConfig.container) {
-			console.log("the instance config provided to the module " + config.moduleName + " is incorrect");
-			return;
-		}
 		_registerModule.call(this, config.moduleName, config, config.module, config.instanceConfig, patchModules);
 		_startExec.call(this, patchModules, moduleResolvePromiseArr);
 
-		_utils2.default.communicateToExtension(_store.moduleS);
-
-		promise = new Promise(function (res, rej) {
-
-			Promise.all(moduleResolvePromiseArr).then(function () {
-
-				res();
-			});
+		return new Promise(function (res, rej) {
+			Promise.all(moduleResolvePromiseArr).then(res).catch(rej);
 		});
-
-		return promise;
 	}
 
 	function use(middleware) {
-
 		_store.middleWareFns.push(middleware);
 	}
 
@@ -1161,7 +1199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				_this.lifeCycleFlags = lifeCycleFlags;
 				_this.instanceConfig = instanceConfig;
 				_this.modulePlaceholders = _this.instanceConfig.placeholders;
-				_this.createInstance = _truss.createInstance.bind(_this);
+				_this.createChildInstance = _truss.createInstance.bind(_this);
 				_this.meta = meta;
 
 				for (var key in instanceData) {
